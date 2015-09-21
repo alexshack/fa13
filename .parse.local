@@ -1,0 +1,10 @@
+{
+  "applications": {
+    "_default": {
+      "link": "fa13"
+    },
+    "fa13": {
+      "applicationId": "WpZR6tYusZlPde1xwQ2J7S8eu29KfzTE6McgV5mQ"
+    }
+  }
+}
