@@ -6,6 +6,7 @@ var express = require('express'),
  
  
 var pageGenerator = require('cloud/controllers/pageGenerator');
+var parseAll = require('cloud/controllers/parseAll');
 var app = express();
  
  
@@ -24,6 +25,6 @@ app.use(parseExpressCookieSession({
 }));
  
 app.get('/', pageGenerator.renderPage);
- 
+
  
 app.listen();
