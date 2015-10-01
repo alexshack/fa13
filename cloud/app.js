@@ -1,10 +1,15 @@
-var express = require('express'),
+var express = require('express');
+var moment = require('moment');
+var _ = require('underscore');
+
+
     ejs = require('ejs'),
 //parseExpressHttpsRedirect = require('parse-express-https-redirect'),
     parseExpressCookieSession = require('parse-express-cookie-session'),
     _ = require('underscore');
  
- 
+var playerController = require('cloud/controllers/player.js');
+var clubController = require('cloud/controllers/club.js');  
 var pageGenerator = require('cloud/controllers/pageGenerator');
 var parseAll = require('cloud/controllers/parseAll');
 var app = express();
@@ -24,7 +29,12 @@ app.use(parseExpressCookieSession({
     }
 }));
  
-app.get('/', pageGenerator.renderPage);
+app.locals._ = _;
 
+
+
+app.get('/', pageGenerator.renderPage);
+app.get('/player', playerController.index);
+app.get('/club/:clubId', clubController.show);
  
 app.listen();

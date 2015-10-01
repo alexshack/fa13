@@ -1,0 +1,59 @@
+    <!-- google web fonts -->
+    <script>
+        WebFontConfig = {
+            google: {
+                families: [
+                    'Source+Code+Pro:400,700:latin',
+                    'Roboto:400,300,500,700,400italic:latin'
+                ]
+            }
+        };
+        (function() {
+            var wf = document.createElement('script');
+            wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+            '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+            wf.type = 'text/javascript';
+            wf.async = 'true';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(wf, s);
+        })();
+    </script>
+
+    <!-- common functions -->
+    <script src="/js/common.min.js"></script>
+    <!-- uikit functions -->
+    <script src="/js/uikit_custom.min.js"></script>
+    <!-- altair common functions/helpers -->
+    <script src="/js/altair_admin_common.min.js"></script>
+
+    <!-- page specific plugins -->
+    <script src="/vendor/peity/jquery.peity.min.js"></script>
+    <!-- datatables -->
+    <script src="/vendor/datatables/js/jquery.dataTables.min.js"></script>
+    <!-- datatables colVis-->
+    <script src="/vendor/datatables/js/dataTables.colVis.js"></script>
+    <!-- datatables tableTools-->
+    <script src="/vendor/datatables/js/dataTables.tableTools.js"></script>
+    <script src="/vendor/countUp/countUp.min.js"></script>
+
+    <!-- datatables custom integration -->
+    <script src="/js/custom/datatables_uikit.min.js"></script>
+
+    <!--  datatables functions -->
+    <script src="/js/pages/plugins_datatables.min.js"></script>
+    <script src="/js/pages/dashboard.min.js"></script>
+    
+    <script>
+        $(function() {
+            // enable hires images
+            altair_helpers.retina_images();
+            // fastClick (touch devices)
+            if(Modernizr.touch) {
+                FastClick.attach(document.body);
+            }
+        });
+    </script>
+
+
+</body>
+</html>

@@ -61,7 +61,8 @@ function parseAll(allText) {
   var allTemp = allTemp.replace(/\/\s+\//gmi, ", ");
   var allTemp = allTemp.replace(/999\/\s+/gmi, "999");
   var arr = allTemp.split(', ');
-  var allDate = arr[1];
+  var aDate = arr[1].split('.');
+  var allDate = new Date (aDate[2], aDate[1], aDate[0]);
   var iAll = parseTurnir(arr, false)+2;
   
   console.log(iAll + '-'+arr[iAll]);
@@ -96,16 +97,22 @@ function parseTurnir(arr, toBase) {
 function parseClub(arr, i, date) {
   var Club = Parse.Object.extend("Club");
   var club = new Club();
-
-
-  
+ 
 
   var s1 = arr[i].split('/');
 
   club.set("date", date);
   club.set("name", s1[0]);
+  club.set("clubId", s1[1]);
   club.set("city", s1[2]);
   club.set("country", s1[3]);
+
+  var Flags = Parse.Object.extend("Flags");
+  var getFlag = new Parse.Query(Flags);
+  getFlag.equalTo("name", s1[3]);
+  getFlag.first().then(function(object) {
+    club.set("flag", object.get("flag"));
+  });
   club.set("stadionName", s1[4]);
   
   i++;
@@ -123,6 +130,12 @@ function parseClub(arr, i, date) {
   manager.set("name", s2[1]);
   manager.set("city", s2[2]);
   manager.set("country", s2[3]);
+  var Flags = Parse.Object.extend("Flags");
+  var getFlag = new Parse.Query(Flags);
+  getFlag.equalTo("name", s2[3]);
+  getFlag.first().then(function(object) {
+    manager.set("flag", object.get("flag"));
+  });
   manager.set("email", s2[4]);
   manager.set("icq", s2[5]);
   manager.set("matches", s2[6]);
@@ -219,7 +232,12 @@ function parseClub(arr, i, date) {
     player.set('number', s[0]);
     player.set('name', s[1]);
     player.set('nationality', s[2]);
-    player.set('nationalityCode', s[2]);
+    var Flags = Parse.Object.extend("Flags");
+  var getFlag = new Parse.Query(Flags);
+  getFlag.equalTo("name", s[2]);
+  getFlag.first().then(function(object) {
+    player.set("nationalityCode", object.get("flag"));
+  });
     player.set('position', s[3]);
 
     var pId = 0;
@@ -320,3 +338,4 @@ function parseClub(arr, i, date) {
 
 
 }
+
