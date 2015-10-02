@@ -62,7 +62,7 @@ function parseAll(allText) {
   var allTemp = allTemp.replace(/999\/\s+/gmi, "999");
   var arr = allTemp.split(', ');
   var aDate = arr[1].split('.');
-  var allDate = new Date (aDate[2], aDate[1], aDate[0]);
+  var allDate = new Date (aDate[2], aDate[1]-1, aDate[0]);
   var iAll = parseTurnir(arr, false)+2;
   
   console.log(iAll + '-'+arr[iAll]);
@@ -71,7 +71,11 @@ function parseAll(allText) {
     iAll = parseClub(arr, iAll, allDate);
     iAll++;
   }
-
+  var All = Parse.Object.extend("All");
+  var all = new All();
+  all.save({
+    date: allDate
+  });
 
 }
 
