@@ -1,0 +1,31 @@
+.md-list>li>.md-list-content .uk-badge {
+    float: none !important;
+}
+
+.club_heading .user_heading_avatar img {
+     border-radius: 20%;
+     border: 1px solid #99CCFF !important;
+}
+
+.club_heading .uk-text-truncate {
+    font: 400 28px/32px Roboto,sans-serif !important;
+    text-transform: uppercase;
+}
+
+.bg_FW {
+    background-color: #4384a8 !important;
+    color: #fff;
+}
+
+.bg_MF {
+    background-color: #6da0bc !important;
+    color: #fff;
+}
+
+.bg_DF {
+    background-color: #acc9d9 !important;
+}
+
+.bg_GK {
+    background-color: #d5e4ec !important;
+ }
