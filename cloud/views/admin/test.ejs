@@ -1,0 +1,15 @@
+<HTML>
+<BODY>
+<% if (typeof errors != "undefined") { %>
+<%=errors%>
+<%}%>
+<% if (typeof content != "undefined") { %>
+<%=content%>
+<%}%>
+<script>
+    <% if (typeof contentObj != "undefined") { %>
+    console.log(<%-JSON.stringify(contentObj)%>);
+    <%}%>
+</script>
+</BODY>
+</HTML>

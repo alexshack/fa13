@@ -11,6 +11,7 @@ var _ = require('underscore');
 var playerController = require('cloud/controllers/player.js');
 var clubController = require('cloud/controllers/club.js');  
 var pageGenerator = require('cloud/controllers/pageGenerator');
+var admin = require('cloud/controllers/admin');
 var parseAll = require('cloud/controllers/parseAll');
 var app = express();
  
@@ -32,7 +33,7 @@ app.use(parseExpressCookieSession({
 app.locals._ = _;
 
 
-
+app.get('/admin/updatetimetable', admin.updateTimetable)
 app.get('/', pageGenerator.renderPage);
 app.get('/player', playerController.index);
 app.get('/club/:clubId', clubController.show);
