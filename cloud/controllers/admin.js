@@ -6,29 +6,43 @@ exports.updateTimetable = function (req, res) {
     var from = req.query.from.split("-");
     var to = req.query.to.split("-");
     var fromDate = new Date(from[0] + " 01 " + from[1]);
+
+
     var toDate = new Date(to[0] + " 01 " + to[1]);
+
+    var m = parseInt(to[0]);
+    var y = parseInt(to[1]);
+    if(m == 12) {
+        y++;
+        m=1;
+    } else {
+        m++;
+    }
+
+
+    var fToDate = new Date(m + " 01 " + y);
     var seasonQuery = new Parse.Query("Season");
 
-    console.log(fromDate + " - " + toDate);
+   // console.log(fromDate + " - " + toDate);
 
     seasonQuery.lessThanOrEqualTo("validFrom", fromDate);
-    seasonQuery.greaterThanOrEqualTo("validTo", toDate);
+    seasonQuery.greaterThanOrEqualTo("validTo", fToDate);
     seasonQuery.first({
         success: function (season) {
             if (season) {
                 var timetableQuery = new Parse.Query("Timetable");
                 timetableQuery.greaterThanOrEqualTo("date", fromDate);
-                timetableQuery.lessThanOrEqualTo("date", toDate);
+                timetableQuery.lessThanOrEqualTo("date", fToDate);
                 timetableQuery.limit(1000);
                 timetableQuery.find({
                     success: function (oldEntries) {
                         //dropping old entries
                         if (oldEntries.length > 0) {
-                            oldEntries.destroyAll({
+                            Parse.Object.destroyAll(oldEntries, {
                                 success: function (oldEntries) {
                                     //creating new timetable entries
-
-                                    createNewEntry(res, from, to);
+                                    console.log("old entries were removed")
+                                    createNewEntry(res, from, to, season);
 
                                 },
                                 error: function (error) {
@@ -227,8 +241,8 @@ function getEvents(monthEntries, year, month, result) {
 
     var tEvents = [];
 
-    var matchEvents = new RegExp('[^\(]*[\(][^\)]*[\)].*|изменение|банкротство|выкуп|золотые|постройки|обмены|Обмены|финальный|аукцион|Аренда');
-
+    //var matchEvents = new RegExp('[^\(]*[\(][^\)]*[\)].*|изменение|банкротство|выкуп|золотые|постройки|обмены|Обмены|финальный|аукцион|Аренда');
+    var matchEvents = new RegExp('[\(].*?[\)]|изменение|банкротство|выкуп|золотые|постройки|обмены|Обмены|финальный|аукцион|Аренда');
 
     for (var i = 0; i < monthEntries.length; i++) {
         var entry = monthEntries[i];
@@ -260,7 +274,7 @@ function getEvents(monthEntries, year, month, result) {
     if (tEvents.length > 0) {
        // var result = [];
         // console.log(events[0]);
-        console.log("year1 = " + year + " month1 = " + month);
+        //console.log("year1 = " + year + " month1 = " + month);
 
         for (var e=0;e<tEvents.length;e++) {
             var ev = tEvents[e];

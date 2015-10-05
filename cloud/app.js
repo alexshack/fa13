@@ -33,7 +33,7 @@ app.use(parseExpressCookieSession({
 app.locals._ = _;
 
 
-app.get('/admin/updatetimetable', admin.updateTimetable)
+app.get('/admin/updatetimetable', admin.updateTimetable);
 app.get('/', pageGenerator.renderPage);
 app.get('/player', playerController.index);
 app.get('/club/:clubId', clubController.show);
