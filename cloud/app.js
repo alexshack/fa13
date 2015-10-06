@@ -12,6 +12,7 @@ var playerController = require('cloud/controllers/player.js');
 var clubController = require('cloud/controllers/club.js');  
 var pageGenerator = require('cloud/controllers/pageGenerator');
 var admin = require('cloud/controllers/admin');
+var jobs = require('cloud/controllers/job_tasks');
 var parseAll = require('cloud/controllers/parseAll');
 var app = express();
  

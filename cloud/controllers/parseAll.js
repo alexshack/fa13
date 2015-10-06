@@ -29,52 +29,60 @@ function uint8ArrayToArray(uint8Array) {
     return array;
 }
 
-Parse.Cloud.job("parseAllFile", function(request, status) {
-
-    Parse.Cloud.useMasterKey();
-    var tomorrow = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
-    var timetableQuery = new Parse.Query("Timetable");
-    timetableQuery.greaterThanOrEqualTo("date", new Date());
-    timetableQuery.lessThanOrEqualTo("date", tomorrow);
-    timetableQuery.find({
-
-        success: function (calendarEntries) {
-
-            if(calendarEntries.length == 0) {
-                status.success("There were no new events in FA13...");
-                return;
-            }
-
-            if(calendarEntries.length >1) {
-                status.error("More than one calendar entry got!");
-                return;
-            }
-
-            var calendarEntry = calendarEntries[0];
-
-
-
-            parseAllFileOnRequest(calendarEntry).tthen(function(result) {
-                console.log(result);
-                status.success(result);
-            }, function(error) {
-                console.log(error);
-                status.error(error);
-            })
-
-        },
-
-        error: function (object, error) {
-            console.log("Error on getting calendar entry with id: " + calId + ". Error: " + error.code + " " + error.message);
-            status.error("Error on getting calendar entry with id: " + calId + ". Error: " + error.code + " " + error.message);
-        }
-    });
-});
-
 exports.removeAllForCalendarEntry = function(calendarEntry) {
     var promise = new Parse.Promise();
 
-   // turnirs, managers, clubs, players,
+    var classes = ["Player", "Club", "Manager"];
+    var c = 0;
+    dropObjectWithClass(classes[0]);
+
+    function dropObjectWithClass(className) {
+        var query = new Parse.Query(className);
+
+        query.equalTo("calendarEntry", calendarEntry);
+        query.limit(1000);
+        query.find({
+            success: function(objects) {
+
+                if(objects.length >0) {
+                    Parse.Object.destroyAll(objects, {
+                        success: function(objects) {
+                            c++;
+
+                            if(c == classes.length) {
+                                console.log("Old objects were dropped");
+                                promise.resolve(true);
+                            } else {
+                                dropObjectWithClass(classes[c]);
+                            }
+                        },
+                        error: function (object, error) {
+                            console.log("Error on dropping old" + className + " : " + error.code + " " + error.message);
+                            promise.reject("Error on dropping old" + className + " : " + error.code + " " + error.message);
+
+                        }
+                    })
+                } else {
+                    c++;
+
+                    if(c == classes.length) {
+                        console.log("Old objects were dropped");
+                        promise.resolve(true);
+                    } else {
+                        dropObjectWithClass(classes[c]);
+                    }
+                }
+            },
+            error: function (object, error) {
+                console.log("Error on getting old" + className + " : " + error.code + " " + error.message);
+                promise.reject("Error on getting old" + className + " : " + error.code + " " + error.message);
+
+            }
+        });
+    }
+
+    return promise;
+
 };
 
 exports.parseAllFileOnRequest = function(calendarEntry) {
@@ -88,7 +96,7 @@ exports.parseAllFileOnRequest = function(calendarEntry) {
             'Content-Type': 'application/zip;charset=utf-8'
         },
         success: function(httpResponse) {
-            console.log("got response");
+
             var result = {};
 
             try {
@@ -117,8 +125,6 @@ exports.parseAllFileOnRequest = function(calendarEntry) {
         },
         error: function(httpResponse) {
 
-            console.log("promise was created");
-
             promise.reject(error);
 
         }
@@ -127,7 +133,7 @@ exports.parseAllFileOnRequest = function(calendarEntry) {
 };
 
 function parseAll(allText, calendarEntry) {
-    console.log("4");
+
     var promise = new Parse.Promise();
     var result = {};
     var turnirs = [];
@@ -144,25 +150,26 @@ function parseAll(allText, calendarEntry) {
     //сначала затянем все флаги, что бы потом не дергать базу каждый раз
 
     var flagsQuery = new Parse.Query("Flags");
-
-
+    var flagMap = {};
+    flagsQuery.limit(1000);
     flagsQuery.find({
 
 
         success: function (flags) {
-            console.log("5");
-            var flagMap = {};
+
+
             for (var f = 0; f < flags.length; f++) {
-                flagMap[flags[f].get("name")] = flags[f].get("flag");
+                flagMap[flags[f].get("name")] = flags[f];
             }
 
             //теперь проверим, все ли турниры есть в базе, если не все, то добавим те, которых нет
-            var turnirQuery = new Parse.Query("Flags");
-            flagsQuery.find({
+            var turnirQuery = new Parse.Query("Turnir");
+            turnirQuery.limit(1000);
+            turnirQuery.find({
                 success: function (turnirs) {
-                    var turnirsObj = []
+                    var turnirsObj = [];
                     for (var t = 0; t < turnirs.length; t++) {
-                        turnirsObj.push(turnirs[0].get("sok"));
+                        turnirsObj.push(turnirs[t].get("sok"));
                     }
 
 
@@ -174,7 +181,7 @@ function parseAll(allText, calendarEntry) {
 
                     i+=2;
 
-                    continueParseAll(flags, turnirs, calendarEntry).then(function(res) {
+                    continueParseAll(flagMap, turnirs, calendarEntry).then(function(res) {
                         promise.resolve(res);
                     },
                     function(error) {
@@ -207,7 +214,6 @@ function parseAll(allText, calendarEntry) {
 
     function continueParseAll(flags,  turnirs, calendarEntry) {
         var promise = new Parse.Promise();
-        console.log(i + ' - ' + arr[i]);
 
         while (i < arr.length) {
           if(parseClub(flags, arr,  allDate, clubs, managers, players, turnirs, calendarEntry).error) {
@@ -241,7 +247,7 @@ function parseAll(allText, calendarEntry) {
 
                                         //status.error("Error on saving players: " + error.code + " " + error.message)
 
-                                        result["error"] = "Error on saving players: " + error.code + " " + error.message;
+                                        result["error"] = "Error on saving players: " + error.message;
                                         //return result;
                                         promise.reject(result["error"]);
 
@@ -254,7 +260,7 @@ function parseAll(allText, calendarEntry) {
 
                                     //status.error("Error on saving clubs: " + error.code + " " + error.message)
 
-                                result["error"] = "Error on saving clubs: " + error.code + " " + error.message;
+                                result["error"] = "Error on saving clubs: " + error;
                                 //return result;\
                                 promise.reject(result["error"]);
 
@@ -300,24 +306,18 @@ function parseAll(allText, calendarEntry) {
         try {
             var s = '';
 
-            var Turnir = Parse.Object.extend("Turnir");
-            var allTurnirs = [];
             while (arr[i] != '888') {
                 s = arr[i].split('=');
 
-                allTurnirs.push(s[1]);
-
-                i++;
-            }
-
-            for (var t = 0; t < allTurnirs.length; t++) {
-                if (turnirsIds.indexOf(allTurnirs[t]) < 0) {
+                if (turnirsIds.indexOf(s[1]) < 0) {
                     var turnir = new Parse.Object("Turnir");
                     turnir.set("turnir", s[0]);
                     turnir.set("sok", s[1]);
 
                     avaibleTurnirs.push(turnir);
                 }
+
+                i++;
             }
 
             result["success"] = "ok";
@@ -338,8 +338,6 @@ function parseAll(allText, calendarEntry) {
         try {
 
             var club = new Parse.Object("Club");
-            console.log("i = " + i);
-            console.log("arr[i] = " + arr[i]);
             var s1 = arr[i].split('/');
             club.set("calendarEntry", calendarEntry);
             club.set("date", date);
@@ -348,12 +346,13 @@ function parseAll(allText, calendarEntry) {
             club.set("city", s1[2]);
             club.set("country", s1[3]);
 
-            var Flags = Parse.Object.extend("Flags");
-            var getFlag = new Parse.Query(Flags);
-            getFlag.equalTo("name", s1[3]);
-            getFlag.first().then(function (object) {
-                club.set("flag", object.get("flag"));
-            });
+
+
+            if (flags[s1[3]]) {
+                club.set("flag", flags[s1[3]]);
+            }
+
+
             club.set("stadionName", s1[4]);
 
             i++;
@@ -429,23 +428,36 @@ function parseAll(allText, calendarEntry) {
                 club.set("awayBottom", s[3]);
             }
 
-            clubs.push(club);
+
 
 
             i++;
+
             s = arr[i].split(',');
+            //сразу добавим такой себе чемпионат "Все турниры" - далее потом для статистики пригодится
+            s.push("allTurnirs");
 
 
-            for (var j = 0; j < s.length; j++) {
+            club.set("turnirs", s);
 
-                for (var t = 0;t<turnirs.length;t++) {
-                    if(turnirs[t].get("sok") == s[j]) {
-                        var relation = club.relation("turnirs");
-                        relation.add(turnirs[t]);
-                    }
-                }
+            clubs.push(club);
 
-            }
+            //Добавим просто масив идентификаторов турниров, так как нельзя добавлять релейшены на несохраненные обхекты
+
+
+            //for (var j = 0; j < s.length; j++) {
+            //
+            //    for (var t = 0;t<turnirs.length;t++) {
+            //        if(turnirs[t].get("sok") == s[j]) {
+            //
+            //            var relation = club.relation("turnirs");
+            //            relation.add(turnirs[t]);
+            //        }
+            //    }
+            //
+            //}
+
+
 
             i++;
 
