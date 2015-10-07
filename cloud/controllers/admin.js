@@ -22,7 +22,7 @@ exports.uploadAllFile = function (req, res) {
         success: function (calendarEntry) {
 
             parseAll.parseAllFileOnRequest(calendarEntry).then(function(result) {
-                console.log("that's all!");
+
                 console.log(result);
                 res.render('admin/test', {
                     content: JSON.stringify(result),
