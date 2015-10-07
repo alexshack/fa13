@@ -2,8 +2,44 @@
  * Created by sandr on 01.10.15.
  */
 
+exports.index = function(req, res) {
+    res.render('admin/test', {
+
+    });
+};
+
+exports.getCalendarEntryWithDate = function(req, res) {
+
+    var ondate = req.body.ondate.split(".");
+
+    var date = new Date(ondate[1] + " " + ondate[0] + " " + ondate[2]);
+
+    var timetableQuery = new Parse.Query("Timetable");
+    timetableQuery.equalTo("date", date);
+    timetableQuery.limit(1000);
+    timetableQuery.find({
+        success: function (entries) {
+            if(entries.length>0) {
+                var entry = entries[0];
+                res.send({
+                    "calendarEntryId": entry.id,
+                    "events":entry.get("event")
+                })
+            } else {
+                res.send({"errors": "No calendar enty found in date " + ondate})
+            }
 
 
+        },
+        error: function (error) {
+            console.log("Error on finding timetable: " + error.code + " " + error.message);
+            // res.send(error);
+            res.send({
+                errors: "Error on finding timetable: " + error.code + " " + error.message
+            });
+        }
+    });
+};
 
 exports.uploadAllFile = function (req, res) {
     var parseAll = require('cloud/controllers/parseAll');

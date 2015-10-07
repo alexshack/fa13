@@ -35,9 +35,12 @@ app.locals._ = _;
 
 
 app.get('/admin/updatetimetable', admin.updateTimetable);
-app.get('/admin/uploadallfile', admin.uploadAllFile);
+app.post('/admin/getcalendarentry', admin.getCalendarEntryWithDate);
+
+app.post('/admin/uploadallfile', admin.uploadAllFile);
 app.get('/', pageGenerator.renderPage);
 app.get('/player', playerController.index);
 app.get('/club/:clubId', clubController.show);
+app.get('/admin', admin.index);
  
 app.listen();
