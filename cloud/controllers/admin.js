@@ -7,11 +7,13 @@
 
 exports.uploadAllFile = function (req, res) {
     var parseAll = require('cloud/controllers/parseAll');
-    var calId = req.query.calendarEntryId;
+    var calId = req.body.calendarEntryId;
+    var fileData64 = req.body.b64.replace("data:application/zip;base64,", "");
 
-    if (!calId || calId == "") {
+
+    if (!calId || calId == "" || !fileData64 || fileData64 == "") {
         res.render('admin/test', {
-            errors: "Empty calendar Id got!"
+            errors: "Empty calendar Id got or no file sent!"
         });
     }
 
@@ -21,7 +23,7 @@ exports.uploadAllFile = function (req, res) {
 
         success: function (calendarEntry) {
 
-            parseAll.parseAllFileOnRequest(calendarEntry).then(function(result) {
+            parseAll.parseAllFileOnRequest(calendarEntry, fileData64).then(function(result) {
 
                 console.log(result);
                 res.render('admin/test', {

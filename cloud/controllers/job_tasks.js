@@ -30,7 +30,7 @@ Parse.Cloud.job("parseAllFile", function(request, status) {
 
             parseAll.removeAllForCalendarEntry(calendarEntry).then(function(result) {
 
-                parseAll.parseAllFileOnRequest(calendarEntry).then(function(result) {
+                parseAll.parseAllFileOnRequest(calendarEntry, null).then(function(result) {
                     console.log(result);
                     status.success(result);
                 }, function(error) {

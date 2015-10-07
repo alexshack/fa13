@@ -85,50 +85,63 @@ exports.removeAllForCalendarEntry = function(calendarEntry) {
 
 };
 
-exports.parseAllFileOnRequest = function(calendarEntry) {
+
+
+exports.parseAllFileOnRequest = function(calendarEntry, fileData64) {
 
     var promise = new Parse.Promise();
 
 
-    Parse.Cloud.httpRequest({
-        url: 'http://www.fa13.info/build/all13Ho.zip',
-        headers: {
-            'Content-Type': 'application/zip;charset=utf-8'
-        },
-        success: function(httpResponse) {
+    if(fileData64) {
+        unpackAndResume(fileData64);
+    } else {
+        Parse.Cloud.httpRequest({
+            url: 'http://www.fa13.info/build/all13Ho.zip',
+            headers: {
+                'Content-Type': 'application/zip;charset=utf-8'
+            },
+            success: function(httpResponse) {
 
-            var result = {};
-
-            try {
                 var array = httpResponse.buffer.toString('base64');
-                var unpacked = new JSZip();
-                unpacked.load(array, {base64: true});
-                var all = decodeBytes(unpacked.file('all13Ho.b13').asBinary(), 'cp1251');
+                unpackAndResume(array);
+            },
+            error: function(error) {
 
+                promise.reject(error);
 
-                //var parser = new Parse.Promise( parseAll(all, calendarEntry))
-                parseAll(all, calendarEntry).then(function(result) {
-
-                    promise.resolve(result);
-
-                }, function(error) {
-
-                    promise.reject(error);
-
-                });
-
-            } catch (e) {
-                console.error('Не удалось распаковать: ' + e);
-                result["error"] = e;
-                promise.reject(result["error"]);
             }
-        },
-        error: function(httpResponse) {
+        });
+    }
 
-            promise.reject(error);
+    function unpackAndResume(array) {
+        var result = {};
 
+        try {
+
+            var unpacked = new JSZip();
+            unpacked.load(array, {base64: true});
+            var all = decodeBytes(unpacked.file('all13Ho.b13').asBinary(), 'cp1251');
+
+
+            //var parser = new Parse.Promise( parseAll(all, calendarEntry))
+            parseAll(all, calendarEntry).then(function(result) {
+
+                promise.resolve(result);
+
+            }, function(error) {
+
+                promise.reject(error);
+
+            });
+
+        } catch (e) {
+            console.error('Не удалось распаковать: ' + e);
+            result["error"] = e;
+            promise.reject(result["error"]);
         }
-    });
+    }
+
+
     return promise;
 };
 
