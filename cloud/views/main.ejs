@@ -1,12 +1,36 @@
 <!-- Include the header partial -->
+<% title = "Наша страница" %>
 <% include _header %>
 
+<% include _menu.ejs %>
+
 <!-- content -->
-<div id="page_content">
-	<div id="page_content_inner">
-		<h1><%= someContent %></h1>
-	</div>
-</div>
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+          <h1>
+            Dashboard
+            <small>Version 2.0</small>
+          </h1>
+          <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li class="active">Dashboard</li>
+          </ol>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+       	</section><!-- /.content -->
+    </div><!-- /.content-wrapper -->
+
 
 <!-- Include the footer partial -->
 <% include _footer %>
+<% include _js.ejs %>
+<!-- Библиотеки для страницы -->
+<script src="plugins/chartjs/Chart.min.js"></script>
+<script></script>
+
+ </body>
+</html>

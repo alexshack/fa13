@@ -1,61 +1,73 @@
 <!-- Include the header partial -->
+<% title = "Админка" %>
+
 <% include ../_header %>
 
+<link rel="stylesheet" href="/plugins/datepicker/datepicker3.css">
+
+<% include ../_menu.ejs %>
 
 <!-- content -->
-<div id="page_content">
-    <div id="page_content_inner">
-        <div id="page_content_inner">
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                Админка
+                <small>Version 1.0</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="/"><i class="fa fa-dashboard"></i> Главная</a></li>
+                <li class="active">Админка</li>
+            </ol>
+        </section>
 
-            <div class="md-card">
-                <div class="md-card-content">
-                    <h3 class="heading_a">
-                        Импорт All файла
-                        <span class="sub-heading">Ручной импорт</span>
-                    </h3>
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <div class="col-md-3 col-sm-6 col-xs-12">
 
-                    <div class="uk-grid">
-                        <div class="uk-width-1-1">
-
-
-                            <div class="md-input-wrapper"><label for="uk_dp_1">Выберите дату</label><input id="date"
-                                                                                                           class="md-input ng-pristine ng-valid ng-isolate-scope md-input-processed ng-touched"
-                                                                                                           type="text"
-                                                                                                           id="uk_dp_1"
-                                                                                                           data-uk-datepicker="{format:'DD.MM.YYYY'}"
-                                                                                                           md-input=""
-                                                                                                           ng-model="forms_advanced.datepicker"
-                                                                                                           style=""><span id="dSpan"
-                                        class="md-input-bar"></span></div>
-
-                            <div id="hidden_area" style="display:none">
-                                <div class="uk-width-medium-1-3 uk-width-large-1-2">
-                                    <textarea id="event"></textarea>
-                                </div>
-
-                                <input id="fileName" type="text"
-                                       class="md-input ng-pristine ng-untouched ng-valid ng-isolate-scope md-input-processed"
-                                       disabled="" ng-model="form.input_c" md-input="" placeholder="Выберите zip файл">
-
-                                <div class="uk-form-file md-btn md-btn-primary">
-                                    Выбрать
-                                    <input id="form-file" type="file" class="ng-pristine ng-untouched ng-valid">
-                                </div>
-
-
-                                <input type="button" onclick="sendData()" value="Отправить">
+                    <div class="box box-danger">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Загрузка all-а</h3>
+                        </div><!-- /.box-header -->
+                        <div class="box-body">
+                            <div class="form-group">
+                                <label>Выберите дату:</label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                    </div>
+                                    <input type="text" class="form-control" id="date">
+                                </div><!-- /.input group -->
                             </div>
+                            <div class="form-group" id="hidden_area" style="display:none">
+                                <textarea id="event"></textarea>
+                                <input id="fileName" type="text" placeholder="Выберите zip файл">
+                                <input type="file" id="form-file">
+                                <p class="help-block">Выберите all*.zip</p>
+                            </div>
+                          </div>
+                        <div class="box-footer" id="date_submit" style="display:none">
+                           <button type="submit" class="btn btn-primary" onclick="sendData()">Отправить</button>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
+    </div><!-- /.content-wrapper -->
 
-    </div>
-</div>
+<!-- Include the footer partial -->
+<% include ../_footer %>
+<% include ../_js.ejs %>
 
 
+<script src="/plugins/datepicker/bootstrap-datepicker.js"></script>
 <script>
+
+    $('#date').datepicker({
+        format: "dd.mm.yyyy",
+        autoclose: true
+    });
 
     var b64;
     var calendarEntryId;
@@ -78,6 +90,7 @@
                 calendarEntryId = response.calendarEntryId;
                 $('#event').html(response.events);
                 $('#hidden_area').attr("style", "display:inline");
+                $('#date_submit').attr("style", "display:inline");
             }
 
 
@@ -125,4 +138,7 @@
 
 
 <!-- Include the footer partial -->
-<% include ../_footer %>
+
+
+ </body>
+</html>
