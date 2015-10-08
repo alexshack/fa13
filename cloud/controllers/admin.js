@@ -12,7 +12,7 @@ exports.getCalendarEntryWithDate = function(req, res) {
 
     var ondate = req.body.ondate.split(".");
 
-    var date = new Date(ondate[1] + " " + ondate[0] + " " + ondate[2]);
+    var date = new Date(ondate[1] + " " + ondate[0] + " " + ondate[2] + " 00:00:00 GMT+0300");
 
     var timetableQuery = new Parse.Query("Timetable");
     timetableQuery.equalTo("date", date);
