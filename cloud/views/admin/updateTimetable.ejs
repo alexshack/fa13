@@ -1,0 +1,87 @@
+<div class="accordion-group">
+    <div class="accordion-heading">
+
+
+        <div class="callout callout-info">
+        <h4 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseUpdateTimetable">
+            Загрузка и обновление календаря
+        </h4>
+        </div>
+    </div>
+    <div id="collapseUpdateTimetable" class="accordion-body collapse in">
+        <div class="accordion-inner">
+            <div class="box box-danger">
+                <div class="box-header with-border">
+                    <!--<h3 class="box-title">Загрузка и обновление календаря</h3>-->
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div class="form-group">
+                        <label>Период</label>
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-calendar"></i>
+                            </div>
+                            <input type="text" class="form-control pull-left active" id="dateRangeTimetable">
+
+                        </div>
+                        <p id="mess" class="help-block">Укажите период загрузки</p>
+
+                        <!-- /.input group -->
+                    </div>
+                </div>
+                <div class="box-footer" id="date_submit" style="display:none">
+                    <button type="submit" class="btn btn-primary" onclick="updateTimeTable()">Загрузить</button>
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#dateRangeTimetable').daterangepicker({
+        //format: "DD.MM.YYYY"
+
+        "locale": {
+            "format": "DD.MM.YYYY",
+            "separator": " - ",
+            "applyLabel": "Применить",
+            "cancelLabel": "Отменить",
+            "fromLabel": "С",
+            "toLabel": "По",
+            "customRangeLabel": "Произвольно",
+            "daysOfWeek": [
+                "Вс",
+                "Пн",
+                "Вт",
+                "Ср",
+                "Чт",
+                "Пт",
+                "Сб"
+            ],
+            "monthNames": [
+                "Январь",
+                "Февраль",
+                "Март",
+                "Апрель",
+                "Май",
+                "Июнь",
+                "Июль",
+                "Август",
+                "Сентябрь",
+                "Октябрь",
+                "Ноябрь",
+                "Декабрь"
+            ],
+            "firstDay": 1
+        }
+
+    });
+
+    function updateTimeTable() {
+        console.log($('#dateRangeTimetable').val());
+    }
+
+</script>

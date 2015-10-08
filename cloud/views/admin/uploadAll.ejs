@@ -1,0 +1,125 @@
+<div class="accordion-group">
+    <div class="accordion-heading">
+        <div class="callout callout-info">
+            <h4 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseUpdateAll">
+                Ручная загрузка all файла
+            </h4>
+        </div>
+
+    </div>
+    <div id="collapseUpdateAll" class="accordion-body collapse in">
+        <div class="accordion-inner">
+            <div class="box box-danger">
+                <div class="box-header with-border">
+                    <!--<h3 class="box-title">Загрузка all-а</h3>-->
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <div class="form-group">
+                        <label>Выберите дату:</label>
+
+                        <div class="input-group">
+
+
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                            <input type="text" class="datepicker form-control" id="date">
+                            </div>
+                        <!-- /.input group -->
+                    </div>
+                    <div class="form-group" id="hidden_area" style="display:none">
+                        <p class="form-control" id="event"></p>
+                        <input type="file" id="form-file">
+                        <p id="mess" class="help-block">Выберите all*.zip</p>
+                    </div>
+                </div>
+                <div class="box-footer" id="date_submit" style="display:none">
+                    <button type="submit" class="btn btn-primary" onclick="updateAllFile()">Отправить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+//    $('#date').datepicker({
+//        format: "dd.mm.yyyy",
+//        autoclose: true
+//    });
+//
+//var datepicker = $.fn.datepicker.noConflict(); // return $.fn.datepicker to previously assigned value
+//$.fn.bootstrapDP = datepicker;
+
+$('.datepicker').datepicker({
+    format: "dd.mm.yyyy",
+    autoclose: true
+});
+
+    var b64;
+    var calendarEntryId;
+
+    //$("#date").val(new Date());
+    $("#date").change(function () {
+        console.log("date = " + $("#date").val());
+        $.ajax({
+            url: '/admin/getcalendarentry',
+            type: 'POST',
+            data: {
+                "ondate": $("#date").val()
+            }
+
+        }).done(function (response) {
+
+            if (response.errors) {
+                $('#hidden_area').attr("style", "display:none;");
+                $('#date_submit').attr("style", "display:none;");
+
+            } else {
+                calendarEntryId = response.calendarEntryId;
+                $('#event').html(response.events);
+                $('#hidden_area').attr("style", "display:block;");
+                $('#date_submit').attr("style", "display:block;");
+            }
+
+
+        });
+    });
+    function readFile(input) {
+        if (input.files && input.files[0]) {
+            var FR = new FileReader();
+            FR.onload = function (e) {
+                b64 = e.target.result;
+            };
+            FR.readAsDataURL(input.files[0]);
+        }
+    }
+
+    $("#form-file").change(function () {
+        readFile(this);
+    });
+
+    function updateAllFile() {
+
+        //event.preventDefault();
+
+        $.ajax({
+            url: '/admin/uploadallfile',
+            type: 'POST',
+            data: {
+                "calendarEntryId": calendarEntryId,
+                "b64": b64
+            }
+
+        }).done(function (response) {
+
+            b64 = null;
+            $('#fileName').val("");
+            $("#form-file").val("");
+
+        });
+    }
+
+
+</script>
