@@ -26,7 +26,7 @@ exports.getCalendarEntryWithDate = function(req, res) {
                     "events":entry.get("event")
                 })
             } else {
-                res.send({"errors": "No calendar enty found in date " + ondate})
+                res.send({"errors": "No calendar entry found in date " + ondate})
             }
 
 
