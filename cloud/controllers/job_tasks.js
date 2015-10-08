@@ -7,10 +7,14 @@ var parseAll = require('cloud/controllers/parseAll');
 Parse.Cloud.job("parseAllFile", function(request, status) {
 
     Parse.Cloud.useMasterKey();
-    var tomorrow = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+
+    var strDate = (new Date().getMonth()+1) + " " +  new Date().getDate() + " " +  new Date().getFullYear() + " 00:00:00 GMT+0300";
+    var mskDate = new Date(strDate);
+
     var timetableQuery = new Parse.Query("Timetable");
-    timetableQuery.greaterThanOrEqualTo("date", new Date());
-    timetableQuery.lessThanOrEqualTo("date", tomorrow);
+    timetableQuery.equalTo("date", mskDate);
+
+
     timetableQuery.find({
 
         success: function (calendarEntries) {

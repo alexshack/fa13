@@ -260,7 +260,7 @@ function parseAll(allText, calendarEntry) {
 
                                         //status.error("Error on saving players: " + error.code + " " + error.message)
 
-                                        result["error"] = "Error on saving players: " + error.message;
+                                        result["error"] = "Error on saving players: " + error;
                                         //return result;
                                         promise.reject(result["error"]);
 
@@ -487,7 +487,7 @@ function parseAll(allText, calendarEntry) {
                 player.set('nationality', s[2]);
 
                 if (flags[s[2]]) {
-                    player.set("nationalityCode", flags[s2[3]]);
+                    player.set("nationalityCode", flags[s[2]]);
                 }
 
                 player.set('position', s[3]);
@@ -563,11 +563,20 @@ function parseAll(allText, calendarEntry) {
                 player.set('transfer', s[35]);
                 player.set('lease', s[36]);
                 player.set('birthplace', s[37]);
-                var f = s[38].split('(');
-                if (f.length > 0) {
-                    player.set('birthdate', f[0]);
-                    player.set('birthtour', f[0].substr(0, f[0].length - 1));
+
+
+                if(s[38].match(new RegExp(/(\d{1,2})/))) {
+                    player.set('birthdate', s[38].match(new RegExp(/(\d{1,2})/))[1]);
+
                 }
+
+                if(s[38].match(new RegExp(/\((\d{1,2})\)/))) {
+
+                    player.set('birthtour', s[38].match(new RegExp(/\((\d{1,2})\)/))[1]);
+                }
+
+                    //player.set('birthtour', f[0].substr(0, f[0].length - 1));
+
 
                 player.set('assists', s[39]);
                 player.set('profit', s[40]);
