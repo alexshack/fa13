@@ -12,7 +12,7 @@ exports.getCalendarEntryWithDate = function(req, res) {
 
     var ondate = req.body.ondate.split(".");
 
-    var date = new Date(ondate[1] + " " + ondate[0] + " " + ondate[2]);
+    var date = new Date(ondate[2], ondate[1]-1, ondate[0], 21, 0);
 
     var timetableQuery = new Parse.Query("Timetable");
     timetableQuery.equalTo("date", date);
@@ -26,7 +26,7 @@ exports.getCalendarEntryWithDate = function(req, res) {
                     "events":entry.get("event")
                 })
             } else {
-                res.send({"errors": "No calendar enty found in date " + ondate})
+                res.send({"errors": "No calendar entry found in date " + ondate})
             }
 
 
