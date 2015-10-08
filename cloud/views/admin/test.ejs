@@ -8,48 +8,7 @@
 <% include ../_menu.ejs %>
 
 <!-- content -->
-<<<<<<< HEAD
-<div id="page_content">
-    <div id="page_content_inner">
-        <div id="page_content_inner">
 
-            <div class="md-card">
-                <div class="md-card-content">
-                    <h3 class="heading_a">
-                        Импорт All файла
-                        <span class="sub-heading">Ручной импорт</span>
-                    </h3>
-
-                    <div class="uk-grid">
-                        <div class="uk-width-1-1">
-
-
-                            <div class="md-input-wrapper"><label for="uk_dp_1">Выберите дату</label><input id="date"
-                                                                                                           class="md-input ng-pristine ng-valid ng-isolate-scope md-input-processed ng-touched"
-                                                                                                           type="text"
-                                                                                                           data-uk-datepicker="{format:'DD.MM.YYYY'}"
-                                                                                                           md-input=""
-                                                                                                           ng-model="forms_advanced.datepicker"
-                                                                                                           style=""><span id="dSpan"
-                                        class="md-input-bar"></span></div>
-
-                            <div id="hidden_area" style="display:none">
-                                <div class="uk-width-medium-1-3 uk-width-large-1-2">
-                                    <textarea id="event"></textarea>
-                                </div>
-
-                                <input id="fileName" type="text"
-                                       class="md-input ng-pristine ng-untouched ng-valid ng-isolate-scope md-input-processed"
-                                       disabled="" ng-model="form.input_c" md-input="" placeholder="Выберите zip файл">
-
-                                <div class="uk-form-file md-btn md-btn-primary">
-                                    Выбрать
-                                    <input id="form-file" type="file" class="ng-pristine ng-untouched ng-valid">
-                                </div>
-
-
-                                <input type="button" onclick="sendData()" value="Отправить">
-=======
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
         <section class="content-header">
@@ -84,10 +43,8 @@
                             </div>
                             <div class="form-group" id="hidden_area" style="display:none">
                                 <textarea id="event"></textarea>
-                                <input id="fileName" type="text" placeholder="Выберите zip файл">
                                 <input type="file" id="form-file">
                                 <p class="help-block">Выберите all*.zip</p>
->>>>>>> 8c98243a5568bd7acd35242362b335fd14d435c6
                             </div>
                           </div>
                         <div class="box-footer" id="date_submit" style="display:none">
@@ -145,8 +102,6 @@
         if (input.files && input.files[0]) {
             var FR = new FileReader();
             FR.onload = function (e) {
-
-                $('#fileName').val(input.files[0].name);
                 b64 = e.target.result;
             };
             FR.readAsDataURL(input.files[0]);
