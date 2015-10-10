@@ -1,13 +1,88 @@
+.content-header>h1 {
+    font-size: 28px;
+    font-weight: 400;
+}
+
+.content-header>h1>small {
+    font-size: 16px;
+    line-height: 16px;
+
+}
+
+.content-header>h1>small img {
+    vertical-align: middle;
+    margin-right: 5px;
+    float: left;
+}
+
+.club-header{
+   font-family: arial,sans-serif; 
+}
+.club-header .widget-user-image>img{
+ width: 100px;
+    height: 100px;
+    float: left;
+}
+
 .club-header .widget-user-header {
     background: #9cf;
+    height: 140px;
+ 
 }
+
+.club-header .widget-user-header small {
+   font-size: 60%;
+   color: #444;
+ 
+}
+
+.club-header .widget-user-username {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: 26px;
+    line-height: 26px;
+    font-weight: 400;
+    margin-left: 120px;
+}
+
+.club-header .widget-user-desc {
+    margin-left: 120px;
+    margin-top: 5px;
+    font-size: 16px;
+    line-height: 16px;
+}
+
+.club-header .widget-user-desc img {
+    vertical-align: middle;
+    margin-right: 5px;
+    float: left;
+}
+
+.club-header .widget-user-raiting {
+    margin-left: 120px;
+    margin-top: 10px;
+    font-size: 24px;
+    font-weight: 400;
+}
+
 
 .club-header .description-block>.description-header {
     margin: 0;
     font-weight: 400;
-    font-size: 26px;
-    font-family: arial,sans-serif;
+     font-family: arial,sans-serif;
 }
+
+
+.club-header .description-block h5 {
+     font-size: 24px;
+     font-weight: 400;
+ }
+.club-header .description-block h6 {
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 18px;
+}
+
 
 .club-header .description-block>.description-text {
     text-transform: none;
@@ -23,15 +98,26 @@
 }
 
 .club-header .box-body {
-    padding-top: 30px;
+
+}
+
+.club-header .nav-stacked>li {
+ 
+
 }
 
 .club-header .nav>li>a {
-    padding: 5px 15px;
+    padding: 10px 15px;
     font-family: Arial,sans-serif;
     font-size: 12px;
     color: #888;
 }
 .club-header .nav>li>a>span {
-    color: #444;
+    color: #333;
+    font-size: 13px;
 }
+
+.box {
+    font-family: Arial,sans-serif;
+}
+

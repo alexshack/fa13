@@ -3,23 +3,28 @@ var Club = Parse.Object.extend('Club');
 
 // Show a given club based on specified id.
 exports.show = function(req, res) {
+  
   var clubQuery = new Parse.Query(Club);
-  var foundClub;
+  var currClub;
   var prevClub;
   var allClub;
   var aDate = new Date();
   clubQuery.equalTo("clubId", req.params.clubId);
-  clubQuery.ascending('date');
+  clubQuery.descending("date");
+  clubQuery.include("calendarEntry");
+  clubQuery.include("flag");
+  clubQuery.include("manager");
   clubQuery.find().then(function(resClub) {
     if (resClub.length > 0) {
       allClub = resClub;
-      foundClub = resClub[resClub.length-1];
-      prevClub = resClub[resClub.length-2];
-      aDate = resClub[resClub.length-1].get('date');
+      currClub = resClub[0];
+      prevClub = resClub[1];
+      aDate = resClub[0].get('date');
       var Player = Parse.Object.extend('Player');
       var playerQuery = new Parse.Query(Player);
-      playerQuery.equalTo('clubName', resClub[0].get('name'));
+      playerQuery.equalTo('club', resClub[0]);
       playerQuery.ascending('positionId', 'name', 'date');
+      playerQuery.include("nationalityCode");
       return playerQuery.find();
     } else {
       return [];
@@ -28,7 +33,7 @@ exports.show = function(req, res) {
     res.render('club/show', {
       aClub: allClub,
       pClub: prevClub,
-      club: foundClub,
+      club: currClub,
       players: players,
       cDate: aDate
     });

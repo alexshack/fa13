@@ -5,6 +5,7 @@
 
 
 <script src="/plugins/sparkline/jquery.sparkline.min.js"></script>
+<script src="/plugins/knob/jquery.knob.js"></script>
 <% include ../_menu.ejs %>
 
 <!-- content -->
@@ -15,50 +16,115 @@
     <section class="content">
         <div class="row">   
             <div class="col-md-4 col-sm-12">
-                <div class="box box-widget widget-user club-header">
+                <div class="box box-widget widget-user-2 club-header">
                 <!-- Add the bg color to the header using any of the bg-* classes -->
                     <div class="widget-user-header">
+                        <div class="widget-user-image">
+                            <img class="club-logo" src="http://www.fa13.info/image/logo/<%= club.get('clubId') %>.gif" alt="<%= club.get('name') %>">
+                        </div>
                         <h3 class="widget-user-username"><%= club.get('name') %></h3>
-                        <h5 class="widget-user-desc"><%= club.get('city') %></h5>
+                        <h5 class="widget-user-desc"><a href="#" title="<%= club.get('country') %>"><img src="/dist/img/blank.gif" class="flag flag-<%= club.get('flag').get('flag') %>" alt="<%= club.get('country') %>" /></a>
+                                        <a href="#"><span><%= club.get('country') %></span></a>
+                        </h5>
+                        <div class="widget-user-raiting"><%= club.get('raiting') %><i class="fa fa-fw fa-caret-up text-success"></i></div>
+
+ 
                     </div>
-                    <div class="widget-user-image">
-                        <img class="img-circle" src="http://www.fa13.info/image/logo/<%= club.get('clubId') %>.gif" alt="User Avatar">
-                    </div>
+
                     <div class="box-body">
                         <div class="row">
-                            <div class="col-sm-4 border-right">
-                                <div class="description-block">
-                                    <div id="sparkline-1"></div>
-                                    <span class="description-text">Рейтинг</span>
-                                    <h5 class="description-header"><%= club.get('raiting') %></h5>
-                                 </div><!-- /.description-block -->
-                            </div><!-- /.col -->
-                            <div class="col-sm-4 border-right">
+                            <div class="col-md-6 col-sm-12 border-right">
                                 <div class="description-block">
                                     <div id="sparkline-2"></div>
                                     <span class="description-text">Финансы клуба</span>
-                                    <h5 class="description-header"><%= (club.get('fc')/1000000).toFixed(2) %> млн</h5>
+                                    <h5 class="description-header"><%= (club.get('fc')/1000000).toFixed(2) %> млн.</h5>
                                 </div><!-- /.description-block -->
                             </div><!-- /.col -->
-                            <div class="col-sm-4">
+                            <div class="col-md-6 col-sm-12">
                                 <div class="description-block">
                                     <div id="sparkline-3"></div>
                                     <span class="description-text">Стоимость игроков</span>
-                                    <h5 class="description-header">40.38 млн</h5>
+                                    <h5 class="description-header">40.38 млн.</h5>
                                 </div><!-- /.description-block -->
                             </div><!-- /.col -->
 
                         </div><!-- /.row -->
  
                     </div>
-                    <div class="box-footer no-padding">
+                    <div class="box-footer">
+                        <div class="row">
+                            <div class="col-xs-4 border-right" >
+                                                               <div class="description-block">
+                                <input type="text" class="knob" data-readonly="true" value="<%= club.get('stadionState') %>" data-width="60" data-height="60" data-fgColor="
+                                <% if (club.get('stadionState')<25) { %>
+                                #008d4c
+                                <% } else { if (club.get('stadionState')<50) { %>
+                                #00a7d0
+                                <% } else { if (club.get('stadionState')<75) { %>
+                                #db8b0b
+                                <% } else { if (club.get('stadionState')<100) { %>
+                                #d33724
+                                <% }}}} %>
+                                
+                                ">
+                                <h6 class="description-header"><%= club.get('stadionSize') %></h6>
+                                <span class="description-text">Стадион</span>
+                            </div>
+                            </div><!-- ./col -->
+                            <div class="col-xs-4 text-center border-right">
+                                <div class="description-block">
+                                <% if (club.get('base')>0) { %>
+                                <input type="text" class="knob" data-readonly="true" value="<%= club.get('baseState') %>" data-width="60" data-height="60" data-fgColor="
+                               <% if (club.get('baseState')<25) { %>
+                                #008d4c
+                                <% } else { if (club.get('baseState')<50) { %>
+                                #00a7d0
+                                <% } else { if (club.get('baseState')<75) { %>
+                                #db8b0b
+                                <% } else { if (club.get('baseState')<100) { %>
+                                #d33724
+                                <% }}}} %>
+                                ">
+                                <h6 class="description-header">Уровень <%= club.get('base') %></h6>
+                                <% } else { %>
+                                <canvas width="60" height="60"></canvas>
+                                <h6 class="description-header">Не построена</h6>
+                                <% } %>
+                                <span class="description-text">Спортбаза</span>
+                            </div>
+                            </div><!-- ./col -->
+                            <div class="col-xs-4 text-center">
+                                <div class="description-block">
+                                <% if (club.get('school')>0) { %>
+                                <input type="text" class="knob" data-readonly="true" value="<%= club.get('schoolState') %>" data-width="60" data-height="60" data-fgColor="
+                               <% if (club.get('schoolState')<25) { %>
+                                #008d4c
+                                <% } else { if (club.get('schoolState')<50) { %>
+                                #00a7d0
+                                <% } else { if (club.get('schoolState')<75) { %>
+                                #db8b0b
+                                <% } else { if (club.get('schoolState')<100) { %>
+                                #d33724
+                                <% }}}} %>
+                                ">
+                                <h6 class="description-header">Построена</h6>
+                                <% } else { %>
+                                <canvas width="60" height="60"></canvas>
+                                <h6 class="description-header">Не построена</h6>
+                                <% } %>
+                                <span class="description-text">Спортшкола</span>
+                            </div>
+                            </div><!-- ./col -->
+                        </div><!-- /.row -->
+                    </div><!-- /.box-footer -->
+                   <div class="box-footer no-padding">
                         <div class="row">
                             <div class="col-md-6">
                                 <ul class="nav nav-pills nav-stacked">
                                     <li><a href="#">Игроки <span class="pull-right"> 17</span></a></li>
-                                    <li><a href="#">Средняя сила <span class="pull-right "> 50.94</span></a></li>
+                                    <li><a href="#">Средний возраст <span class="pull-right"> 28.00</span></a></li>                                    
                                     <li><a href="#">Средний талант <span class="pull-right"> 67.18</span></a></li>
-                                    <li><a href="#">Средний возраст <span class="pull-right"> 28.00</span></a></li>
+                                    <li><a href="#">Средняя сила <span class="pull-right "> 50.94</span></a></li>
                                     <li><a href="#">ЗП игроков <span class="pull-right"> 1.21 млн.</span></a></li>                                    
                                 </ul>
                             </div>
@@ -72,14 +138,64 @@
                                 </ul>
                             </div>
                         </div>
-                    </div>
+                    </div><!-- /.footer -->
                     <div class="box-footer text-center">
-                        <a href="#" class="uppercase">Статистика <i class="fa  fa-angle-double-right"></i></a>
+                        <a href="javascript::"><span class="uppercase text-light-blue">Подробная информация о клубе  </span> </a>
+                    </div>
+                </div><!-- /.box -->
+            </div>
+            <div class="col-md-8">
+                <div class="box box-primary">
+                    <div class="box-header ">
+                        <h3 class="box-title">Состав клуба <%= club.get('name') %></h3>
+                        <div class="box-tools pull-right">
+                            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        </div>
+
+                    </div><!-- /.box-header -->
+                    <div class="box-body table-responsive no-padding">
+                        <table class="table table-hover">
+                            <tbody>
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th class="text-center">Поз</th>
+                                    <th class="text-center">Нац</th>
+                                    <th>Игрок</th>
+                                    <th class="text-right">Воз</th>
+                                    <th class="text-right">Тал</th>
+                                    <th class="text-right">Сила</th>
+                                    <th class="text-right">ЗП</th>
+                                    <th class="text-right">Цена</th>
+                                    <th class="text-right">&nbsp;</th>
+                                </tr>
+                                <% players.forEach(function(player) { %>
+                                <tr>
+                                    <td class="text-center"><%= player.get('number') %></td>
+                                    <td class="text-center"><%= player.get('position') %></td>
+                                    <td class="text-center">
+                                        <img src="/dist/img/blank.gif" class="flag flag-<%= player.get('nationalityCode').get('flag') %>" alt="<%= player.get('nationality') %>" title="<%= player.get('nationality') %>" />
+                                    </td>
+                                    <td><a href="/player/<%= player.get('playerId') %>"><%= player.get('name') %></a><% if (player.get('disqualification')>0) { %> <i class="fa fa-ban text-danger" title="Дисквалификация: <%= player.get('disqualification') %>"></i><% } %><% if (player.get('fitness')<71) { %> <i class="fa fa-medkit text-danger" title="Физа: <%= player.get('fitness') %>"></i><% } %></td>
+                                    <td class="text-right"><%= player.get('age') %></td>
+                                    <td class="text-right"><%= player.get('talent') %></td>
+                                    <td class="text-right"><%= player.get('strength') %></td>
+                                    <td class="text-right"><%= player.get('salary') %></td>
+                                    <td class="text-right"><%= player.get('price') %>
+ 
+
+                                    </td>
+                                    <td>&nbsp;</td>
+                                </tr>
+                                <% }) %>
+                         </tbody>
+                        </table>
+                    </div><!-- /.box-body -->
+                    <div class="box-footer text-center">
+                        <a href="javascript::"><span class="uppercase text-light-blue">Подробная информация о составе  </span> </a>
                     </div>
                 </div>
-
             </div>
-        </div>
+        </div><!-- /.row -->
     </section>
 
         <!-- Main content -->
@@ -90,6 +206,7 @@
 <% include ../_footer %>
 
 <script>
+$(".knob").knob();
 var myvalues = [1000, 1200, 920, 927, 931, 1027, 819, 930, 1021];
   $('#sparkline-1').sparkline(myvalues, {
     type: 'line',
