@@ -89,11 +89,11 @@ exports.removeAllForCalendarEntry = function(calendarEntry) {
 
 exports.parseAllFileOnRequest = function(calendarEntry, fileData64) {
 
-    var promise = new Parse.Promise();
+     var promise = new Parse.Promise();
 
 
     if(fileData64) {
-        unpackAndResume(fileData64);
+        unpackAndResume(fileData64, false);
     } else {
         Parse.Cloud.httpRequest({
             url: 'http://www.fa13.info/build/all13Ho.zip',
@@ -103,7 +103,7 @@ exports.parseAllFileOnRequest = function(calendarEntry, fileData64) {
             success: function(httpResponse) {
 
                 var array = httpResponse.buffer.toString('base64');
-                unpackAndResume(array);
+                unpackAndResume(array, true);
             },
             error: function(error) {
 
@@ -118,6 +118,7 @@ exports.parseAllFileOnRequest = function(calendarEntry, fileData64) {
 
         try {
 
+            
             var unpacked = new JSZip();
             unpacked.load(array, {base64: true});
             var all = decodeBytes(unpacked.file('all13Ho.b13').asBinary(), 'cp1251');

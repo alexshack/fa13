@@ -1,249 +1,127 @@
 <!-- Include the header partial and specify a title -->
 <% title = club.get('name') %>
+
 <% include ../_header %>
 
+
+<script src="/plugins/sparkline/jquery.sparkline.min.js"></script>
+<% include ../_menu.ejs %>
+
 <!-- content -->
-<div id="page_content">
-        <div id="page_content_inner">
-            <div class="uk-grid" data-uk-grid-margin data-uk-grid-match id="user_profile">
-                           <div class="uk-width-large-3-10">
-                    <div class="md-card">
-                        <div class="user_heading club_heading">
-                            <div class="user_heading_menu" data-uk-dropdown>
-                                <i class="md-icon material-icons md-icon-light">&#xE5D4;</i>
-                                <div class="uk-dropdown uk-dropdown-flip uk-dropdown-small">
-                                    <ul class="uk-nav">
-                                        <li><a href="#"><%= cDate.getDate()+'.'+cDate.getMonth()+'.'+cDate.getFullYear()  %></a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="user_heading_avatar">
-                                <img src="http://www.fa13.info/image/logo/<%= club.get('clubId') %>.gif" alt="user avatar"/>
-                            </div>
-                            <div class="user_heading_content">
-                                <h1 class="heading_b">
-                                    <span class="uk-text-truncate"><%= club.get('name') %></span>
-                                    <span class="sub-heading"><%= club.get('city') %></span>
-                                </h1>
 
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
  
+    <section class="content">
+        <div class="row">   
+            <div class="col-md-4 col-sm-12">
+                <div class="box box-widget widget-user club-header">
+                <!-- Add the bg color to the header using any of the bg-* classes -->
+                    <div class="widget-user-header">
+                        <h3 class="widget-user-username"><%= club.get('name') %></h3>
+                        <h5 class="widget-user-desc"><%= club.get('city') %></h5>
+                    </div>
+                    <div class="widget-user-image">
+                        <img class="img-circle" src="http://www.fa13.info/image/logo/<%= club.get('clubId') %>.gif" alt="User Avatar">
+                    </div>
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-sm-4 border-right">
+                                <div class="description-block">
+                                    <div id="sparkline-1"></div>
+                                    <span class="description-text">Рейтинг</span>
+                                    <h5 class="description-header"><%= club.get('raiting') %></h5>
+                                 </div><!-- /.description-block -->
+                            </div><!-- /.col -->
+                            <div class="col-sm-4 border-right">
+                                <div class="description-block">
+                                    <div id="sparkline-2"></div>
+                                    <span class="description-text">Финансы клуба</span>
+                                    <h5 class="description-header"><%= (club.get('fc')/1000000).toFixed(2) %> млн</h5>
+                                </div><!-- /.description-block -->
+                            </div><!-- /.col -->
+                            <div class="col-sm-4">
+                                <div class="description-block">
+                                    <div id="sparkline-3"></div>
+                                    <span class="description-text">Стоимость игроков</span>
+                                    <h5 class="description-header">40.38 млн</h5>
+                                </div><!-- /.description-block -->
+                            </div><!-- /.col -->
+
+                        </div><!-- /.row -->
+ 
+                    </div>
+                    <div class="box-footer no-padding">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="nav nav-pills nav-stacked">
+                                    <li><a href="#">Игроки <span class="pull-right"> 17</span></a></li>
+                                    <li><a href="#">Средняя сила <span class="pull-right "> 50.94</span></a></li>
+                                    <li><a href="#">Средний талант <span class="pull-right"> 67.18</span></a></li>
+                                    <li><a href="#">Средний возраст <span class="pull-right"> 28.00</span></a></li>
+                                    <li><a href="#">ЗП игроков <span class="pull-right"> 1.21 млн.</span></a></li>                                    
+                                </ul>
                             </div>
-                        </div>
-                        <div class="md-card-content">
-                            <ul class="md-list md-list-addon">
-                               <li>
-                                    <div class="md-list-addon-element">
-                                        <i class="md-list-addon-icon material-icons">star_rate</i>
-                                    </div>
-                                    <div class="md-list-content">
-                                        <div class="uk-float-right uk-margin-top uk-margin-small-right">
-                                            <span class="peity_sale peity_data">
-                                                <% for(var i=0; i<(aClub.length-1); i++) { %><%= aClub[i].get('raiting')+',' %><% } %><%= club.get('raiting') %>
-                                            </span>
-                                        </div>
-                                        
-                                        <h2 class="uk-margin-remove"><span class="countUpMe"><%= club.get('raiting') %></span>
-                                            <% if(club.get('raiting') - pClub.get('raiting') != 0) { %>
-                                            <span class="uk-float-none uk-badge 
-                                            <% if(club.get('raiting') - pClub.get('raiting') > 0) { %> uk-badge-success <% } else { %> uk-badge-danger <% }; %> uk-badge-notification">
-                                            <% if(club.get('raiting') > pClub.get('raiting')) { %>+<% }; %><%= club.get('raiting') - pClub.get('raiting') %></span><% }; %>
-                                        </h2>
-                                        <span class="uk-text-small uk-text-muted">Рейтинг</span>
-
-                                    </div>
-                                </li>
-                               <li>
-                                    <div class="md-list-addon-element">
-                                        <i class="md-list-addon-icon material-icons">attach_money</i>
-                                    </div>
-                                    <div class="md-list-content">
-                                        <div class="uk-float-right uk-margin-top uk-margin-small-right">
-                                            <span class="peity_sale peity_data">
-                                                <% for(var i=0; i<(aClub.length-1); i++) { %><%= aClub[i].get('fc')+',' %><% } %><%= club.get('fc') %>
-                                            </span>
-                                        </div>
-                                        
-                                        <h2 class="uk-margin-remove"><span class="countUpMe"><%= (club.get('fc') / 1000000).toFixed(2) %></span> <span class="uk-text-small"> млн</span>
-                                            <% if(club.get('fc') - pClub.get('fc') != 0) { %>
-                                            <span class="uk-float-none uk-badge 
-                                            <% if(club.get('fc') - pClub.get('fc') > 0) { %> uk-badge-success <% } else { %> uk-badge-danger <% }; %> uk-badge-notification">
-                                            <% if(club.get('fc') > pClub.get('fc')) { %>+<% }; %><%= ((club.get('fc') - pClub.get('fc'))/1000000).toFixed(2) %>
-                                        </span><% }; %>
-                                        </h2>
-                                        <span class="uk-text-small uk-text-muted">Финансы клуба</span>
-
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="md-list-addon-element">
-                                        <i class="md-list-addon-icon material-icons">swap_vert</i>
-                                    </div>
-                                    <div class="md-list-content">
-                                        <div class="uk-float-right uk-margin-top uk-margin-small-right">
-                                            <span class="peity_sale peity_data">
-                                                <% for(var i=0; i<(aClub.length-1); i++) { %> <%= aClub[i].get('bum')+',' %> <% } %><%= club.get('bum') %>    
-                                            </span>
-                                        </div>
-                                        <h2 class="uk-margin-remove"><span class="countUpMe"><%= club.get('bum') %></span>
-                                           <% if(club.get('bum') - pClub.get('bum') != 0) { %>
-                                            <span class="uk-badge 
-                                            <% if(club.get('bum') - pClub.get('bum') > 0) { %> uk-badge-success <% } else { %> uk-badge-danger <% }; %> uk-badge-notification">
-                                            <% if(club.get('bum') > pClub.get('bum')) { %>+<% }; %><%= club.get('bum') - pClub.get('bum') %>
-                                            </span>
-                                            <% }; %>
-                                        </h2>
-                                        <span class="uk-text-small uk-text-muted">БУМ</span>
-                                    </div>
-                                </li>
-                            </ul>
+                            <div class="col-md-6">
+                                <ul class="nav nav-pills nav-stacked">
+                                    <li><a href="#">КГТ <span class="pull-right"> <%= (club.get('coach')-200).toFixed(0) %></span></a></li>
+                                    <li><a href="#">Доктор <span class="pull-right "> <%= club.get('doctorPlayers') %>/<%= club.get('doctorQualification') %></span></a></li>
+                                    <li><a href="#">Скаут <span class="pull-right"> <%= club.get('scout') %></span></a></li>
+                                    <li><a href="#">Тренера <span class="pull-right"> <%= club.get('goalkeepersCoach') %>/<%= club.get('defendersCoach') %>/<%= club.get('midfieldersCoach') %>/<%= club.get('forwardsCoach') %>/<%= club.get('fitnessCoach') %>/<%= club.get('moraleCoach') %></span></a></li>
+                                    <li><a href="#">ЗП тренеров <span class="pull-right"> 200 тыс.</span></a></li>  
+                                </ul>
+                            </div>
                         </div>
                     </div>
-
-                </div>
-
-                <div class="uk-width-large-7-10">
-                    <div class="md-card">
-
-                        <div class="user_content">
-                            <ul id="user_profile_tabs" class="uk-tab" data-uk-tab="{connect:'#user_profile_tabs_content', animation:'slide-horizontal'}" data-uk-sticky="{ top: 48, media: 960 }">
-                                <li class="uk-active"><a href="#">Состав</a></li>
-                                <li><a href="#">Матчи</a></li>
-                                <li><a href="#">Статистика</a></li>
-                            </ul>
-                            <ul id="user_profile_tabs_content" class="uk-switcher uk-margin">
-                                <li>
-                                    <table class="uk-table uk-table-nowrap" id="ts_align">
-                            <thead>
-                            <tr>
-                                <th class="uk-text-center">#</th>
-                                <th class="uk-text-center"">Поз </th>
-                                <th class="uk-width-2-10">Игрок</th>
-                                <th class="uk-text-center">Воз </th>
-                                <th class="uk-text-center">Тал </th>
-
-                                <th class="uk-text-left">Опыт</th>
-                                <th class="uk-text-left">Сила</th>
-                                <th class="uk-text-left">Физа</th>
-                                <th class="uk-text-left">Дух </th>
-                                <th class="uk-text-left">Здр </th>
-                                <th class="uk-text-left">Сыг </th>
-                                <th class="uk-width-2-10 uk-text-center">СВ</th>
-                                <th class="uk-text-left">ЗП  </th>
-                                <th class="uk-text-right">Цена</th>
-                                <th class="uk-text-right">Тур </th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <% for(var j=0; j<(players.length); j++) { %>
-                                <% if(players[j].get('date').getTime() == cDate.getTime()) { %>
-                                <tr>
-                                    <td class="uk-text-center <% if(players[j].get("positionId") == 1) { %>md-bg-blue-50<% }; %><% if(players[j].get("positionId") == 2 || players[j].get("positionId") == 3 || players[j].get("positionId") == 4) { %>md-bg-blue-100<% }; %><% if(players[j].get("positionId") == 5 || players[j].get("positionId") == 6 || players[j].get("positionId") == 7) { %>md-bg-blue-200<% }; %><% if(players[j].get("positionId") == 8 || players[j].get("positionId") == 9 || players[j].get("positionId") == 10) { %>md-bg-blue-300<% }; %>"><span class="<% if(players[j].get("disqualification")>0) { %>uk-badge uk-badge-danger uk-badge-notification<% } %><% if(players[j].get("fitness")<75) { %>uk-badge uk-badge-warning uk-badge-notification<% } %>"><%= players[j].get("number") %></span>
-
-
-                                    </td>
-                                    <td class="uk-text-center""><%= players[j].get("position") %></td>
-                                    <td><a href="/player/<%= players[j].get("playerId") %>"><%= players[j].get("name") %></a></td>
-                                    
-                                    <td class="uk-text-center"><%= players[j].get("age") %></td>
-                                    <td class="uk-text-center"><%= players[j].get("talent") %></td>
-
-                                    <td class="uk-text-left"><%= players[j].get("experience") %>
-                                       <% if(players[j].get("experience") != players[j-1].get("experience") && players[j].get("playerId") == players[j-1].get("playerId")) { %>
-                                            <span class="uk-badge 
-                                            <% if(players[j].get("experience") > players[j-1].get("experience")) { %> uk-badge-success <% } else { %> uk-badge-danger <% }; %> uk-badge-notification">
-                                            <% if(players[j].get("experience") > players[j-1].get("experience")) { %>+<% }; %><%= players[j].get("experience") - players[j-1].get("experience") %>
-                                            </span>
-                                        <% }; %>
-                                    </td>
-                                    <td class="uk-text-left"><%= players[j].get("strength") %>
-                                       <% if(players[j].get("strength") != players[j-1].get("strength") && players[j].get("playerId") == players[j-1].get("playerId")) { %>
-                                            <span class="uk-badge 
-                                            <% if(players[j].get("strength") > players[j-1].get("strength")) { %> uk-badge-success <% } else { %> uk-badge-danger <% }; %> uk-badge-notification">
-                                            <% if(players[j].get("strength") > players[j-1].get("strength")) { %>+<% }; %><%= players[j].get("strength") - players[j-1].get("strength") %>
-                                            </span>
-                                        <% }; %>
-                                    </td>
-                                    <td class="uk-text-left"><%= players[j].get("fitness") %>
-                                       <% if(players[j].get("fitness") != players[j-1].get("fitness") && players[j].get("playerId") == players[j-1].get("playerId")) { %>
-                                            <span class="uk-text-small 
-                                            <% if(players[j].get("fitness") > players[j-1].get("fitness")) { %> uk-text-success <% } else { %> uk-text-danger <% }; %> ">
-                                            <% if(players[j].get("fitness") > players[j-1].get("fitness")) { %>+<% }; %><%= players[j].get("fitness") - players[j-1].get("fitness") %>
-                                            </span>
-                                        <% }; %>
-                                    </td>
-                                    <td class="uk-text-left"><%= players[j].get("morale") %>
-                                       <% if(players[j].get("morale") != players[j-1].get("morale") && players[j].get("playerId") == players[j-1].get("playerId")) { %>
-                                            <span class="uk-text-small 
-                                            <% if(players[j].get("morale") > players[j-1].get("morale")) { %> uk-text-success <% } else { %> uk-text-danger <% }; %> ">
-                                            <% if(players[j].get("morale") > players[j-1].get("morale")) { %>+<% }; %><%= players[j].get("morale") - players[j-1].get("morale") %>
-                                            </span>
-                                        <% }; %>
-                                    </td>
-                                    <td class="uk-text-left"><%= players[j].get("health") %>
-                                       <% if(players[j].get("health") != players[j-1].get("health") && players[j].get("playerId") == players[j-1].get("playerId")) { %>
-                                            <span class="uk-text-small 
-                                            <% if(players[j].get("health") > players[j-1].get("health")) { %> uk-text-success <% } else { %> uk-text-danger <% }; %> ">
-                                            <% if(players[j].get("health") > players[j-1].get("health")) { %>+<% }; %><%= players[j].get("health") - players[j-1].get("health") %>
-                                            </span>
-                                        <% }; %>
-                                    </td>
-                                    <td class="uk-text-left"><%= players[j].get("teamwork") %>
-                                       <% if(players[j].get("teamwork") != players[j-1].get("teamwork") && players[j].get("playerId") == players[j-1].get("playerId")) { %>
-                                            <span class="uk-text-small 
-                                            <% if(players[j].get("teamwork") > players[j-1].get("teamwork")) { %> uk-text-success <% } else { %> uk-text-danger <% }; %> ">
-                                            <% if(players[j].get("teamwork") > players[j-1].get("teamwork")) { %>+<% }; %><%= players[j].get("teamwork") - players[j-1].get("teamwork") %>
-                                            </span>
-                                        <% }; %>
-                                    </td>
-                                    <td class="uk-text-center">
-                                        <% if(players[j].get("shooting") > 20 || (players[j].get("shooting") != players[j-1].get("shooting") && players[j].get("playerId") == players[j-1].get("playerId"))) { %>у<span class='<% if(players[j].get("shooting") != players[j-1].get("shooting") && players[j].get("playerId") == players[j-1].get("playerId")) { %>uk-text-bold <% if(players[j].get("shooting") > players[j-1].get("shooting")) { %> uk-text-success <% } else { %> uk-text-danger <% }; %><% }; %>'><%=players[j].get("shooting")%></span><% }; %><% if(players[j].get("passing") > 20 || (players[j].get("passing") != players[j-1].get("passing") && players[j].get("playerId") == players[j-1].get("playerId"))) { %>п<span class='<% if(players[j].get("passing") != players[j-1].get("passing") && players[j].get("playerId") == players[j-1].get("playerId")) { %>uk-text-bold <% if(players[j].get("passing") > players[j-1].get("passing")) { %> uk-text-success <% } else { %> uk-text-danger <% }; %><% }; %>'><%=players[j].get("passing")%></span><% }; %><% if(players[j].get("crossing") > 20 || (players[j].get("crossing") != players[j-1].get("crossing") && players[j].get("playerId") == players[j-1].get("playerId"))) { %>н<span class='<% if(players[j].get("crossing") != players[j-1].get("crossing") && players[j].get("playerId") == players[j-1].get("playerId")) { %>uk-text-bold <% if(players[j].get("crossing") > players[j-1].get("crossing")) { %> uk-text-success <% } else { %> uk-text-danger <% }; %><% }; %>'><%=players[j].get("crossing") %></span><% }; %><% if(players[j].get("dribbling") > 20 || (players[j].get("dribbling") != players[j-1].get("dribbling") && players[j].get("playerId") == players[j-1].get("playerId"))) { %>д<span class='<% if(players[j].get("dribbling") != players[j-1].get("dribbling") && players[j].get("playerId") == players[j-1].get("playerId")) { %>uk-text-bold <% if(players[j].get("dribbling") > players[j-1].get("dribbling")) { %> uk-text-success <% } else { %> uk-text-danger <% }; %><% }; %>'><%=players[j].get("dribbling") %></span><% }; %><% if(players[j].get("tackling") > 20 || (players[j].get("tackling") != players[j-1].get("tackling") && players[j].get("playerId") == players[j-1].get("playerId"))) { %>о<span class='<% if(players[j].get("tackling") != players[j-1].get("tackling") && players[j].get("playerId") == players[j-1].get("playerId")) { %>uk-text-bold <% if(players[j].get("tackling") > players[j-1].get("tackling")) { %> uk-text-success <% } else { %> uk-text-danger <% }; %><% }; %>'><%=players[j].get("tackling") %></span><% }; %><% if(players[j].get("heading") > 20 || (players[j].get("heading") != players[j-1].get("heading") && players[j].get("playerId") == players[j-1].get("playerId"))) { %>вг<span class='<% if(players[j].get("heading") != players[j-1].get("heading") && players[j].get("playerId") == players[j-1].get("playerId")) { %>uk-text-bold <% if(players[j].get("heading") > players[j-1].get("heading")) { %> uk-text-success <% } else { %> uk-text-danger <% }; %><% }; %>'><%=players[j].get("heading") %></span><% }; %><% if(players[j].get("speed") > 20 || (players[j].get("speed") != players[j-1].get("speed") && players[j].get("playerId") == players[j-1].get("playerId"))) { %>с<span class='<% if(players[j].get("speed") != players[j-1].get("speed") && players[j].get("playerId") == players[j-1].get("playerId")) { %>uk-text-bold <% if(players[j].get("speed") > players[j-1].get("speed")) { %> uk-text-success <% } else { %> uk-text-danger <% }; %><% }; %>'><%=players[j].get("speed") %></span><% }; %><% if(players[j].get("stamina") > 20 || (players[j].get("stamina") != players[j-1].get("stamina") && players[j].get("playerId") == players[j-1].get("playerId"))) { %>ф<span class='<% if(players[j].get("stamina") != players[j-1].get("stamina") && players[j].get("playerId") == players[j-1].get("playerId")) { %>uk-text-bold <% if(players[j].get("stamina") > players[j-1].get("stamina")) { %> uk-text-success <% } else { %> uk-text-danger <% }; %><% }; %>'><%=players[j].get("stamina") %></span><% }; %><% if(players[j].get("reflexes") > 20 || (players[j].get("reflexes") != players[j-1].get("reflexes") && players[j].get("playerId") == players[j-1].get("playerId"))) { %>р<span class='<% if(players[j].get("reflexes") != players[j-1].get("reflexes") && players[j].get("playerId") == players[j-1].get("playerId")) { %>uk-text-bold <% if(players[j].get("reflexes") > players[j-1].get("reflexes")) { %> uk-text-success <% } else { %> uk-text-danger <% }; %><% }; %>'><%=players[j].get("reflexes") %></span><% }; %><% if(players[j].get("handling") > 20 || (players[j].get("handling") != players[j-1].get("handling") && players[j].get("playerId") == players[j-1].get("playerId"))) { %>т<span class='<% if(players[j].get("handling") != players[j-1].get("handling") && players[j].get("playerId") == players[j-1].get("playerId")) { %>uk-text-bold <% if(players[j].get("handling") > players[j-1].get("handling")) { %> uk-text-success <% } else { %> uk-text-danger <% }; %><% }; %>'><%=players[j].get("handling") %></span><% }; %>                                                 
-                                    </td>
-                                    <td class="uk-text-right"><%= players[j].get("salary") %>
-                                       <% if(players[j].get("salary") != players[j-1].get("salary") && players[j].get("playerId") == players[j-1].get("playerId")) { %>
-                                            <span class="uk-text-small 
-                                            <% if(players[j].get("salary") > players[j-1].get("salary")) { %> uk-text-success <% } else { %> uk-text-danger <% }; %> ">
-                                            <% if(players[j].get("salary") > players[j-1].get("salary")) { %>+<% }; %><%= players[j].get("salary") - players[j-1].get("salary") %>
-                                            </span>
-                                        <% }; %>
-                                    </td>
-                                    <td class="uk-text-right"><%= players[j].get("price") %>
-                                      <% if(players[j].get("price") != players[j-1].get("price") && players[j].get("playerId") == players[j-1].get("playerId")) { %>
-                                            <span class="uk-text-small 
-                                            <% if(players[j].get("price") > players[j-1].get("price")) { %> uk-text-success <% } else { %> uk-text-danger <% }; %> ">
-                                            <% if(players[j].get("price") > players[j-1].get("price")) { %>+<% }; %><%= players[j].get("price") - players[j-1].get("price") %>
-                                            </span>
-                                        <% }; %>
-                                    </td>
-                                    <td class="uk-text-right"><%= players[j].get("birthtour") %></td>
-                                </tr>
-                                <% }; %>
-
-                            <% } %>
-                            </tbody>
-                            </table>
-
-                                </li>
-                                <li>
- 
-                                </li>
-                                <li>
- 
-                                </li>
-                            </ul>
-                        </div>
+                    <div class="box-footer text-center">
+                        <a href="#" class="uppercase">Статистика <i class="fa  fa-angle-double-right"></i></a>
                     </div>
                 </div>
- 
+
             </div>
         </div>
-    </div>
+    </section>
 
+        <!-- Main content -->
 
-
- 
-    </div>
-</div>
-
+    </div><!-- /.content-wrapper -->
 
 <!-- Include the footer partial -->
 <% include ../_footer %>
+
+<script>
+var myvalues = [1000, 1200, 920, 927, 931, 1027, 819, 930, 1021];
+  $('#sparkline-1').sparkline(myvalues, {
+    type: 'line',
+    lineColor: '#92c1dc',
+    fillColor: "#ebf4f9",
+    height: '50',
+    width: '80'
+  });
+  myvalues = [515, 519, 520, 522, 652, 810, 370, 627, 319, 630, 921];
+  $('#sparkline-2').sparkline(myvalues, {
+    type: 'line',
+    lineColor: '#92c1dc',
+    fillColor: "#ebf4f9",
+    height: '50',
+    width: '80'
+  });
+  myvalues = [15, 19, 20, 22, 33, 27, 31, 27, 19, 20, 21];
+  $('#sparkline-3').sparkline(myvalues, {
+    type: 'line',
+    lineColor: '#92c1dc',
+    fillColor: "#ebf4f9",
+    height: '50',
+    width: '80'
+  });
+</script>
+
+
+
+
+
+<!-- Include the footer partial -->
+
+
+ </body>
+</html>

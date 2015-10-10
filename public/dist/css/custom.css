@@ -1,0 +1,37 @@
+.club-header .widget-user-header {
+    background: #9cf;
+}
+
+.club-header .description-block>.description-header {
+    margin: 0;
+    font-weight: 400;
+    font-size: 26px;
+    font-family: arial,sans-serif;
+}
+
+.club-header .description-block>.description-text {
+    text-transform: none;
+    font-weight: 100;
+    font-size: 12px;
+    margin: 15px 0;
+    line-height: 25px;
+     color: #888;
+}
+
+.club-header .box-footer {
+  padding: 10px;
+}
+
+.club-header .box-body {
+    padding-top: 30px;
+}
+
+.club-header .nav>li>a {
+    padding: 5px 15px;
+    font-family: Arial,sans-serif;
+    font-size: 12px;
+    color: #888;
+}
+.club-header .nav>li>a>span {
+    color: #444;
+}
