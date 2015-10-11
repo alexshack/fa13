@@ -1,3 +1,21 @@
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800&subset=latin,cyrillic);
+@import url(https://fonts.googleapis.com/css?family=Ubuntu:400,300,500,700&subset=latin,cyrillic);
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,300,500,700&subset=latin,cyrillic);
+
+body {
+   font-family: 'Roboto', Helvetica, sans-serif !important;
+  line-height: 1.42857143;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  font-weight: 400 !important;
+}
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: 'Roboto', Helvetica, sans-serif !important;
+    font-weight: 400 !important;
+}
+
 .content-header>h1 {
     font-size: 28px;
     font-weight: 400;
@@ -16,18 +34,35 @@
 }
 
 .club-header{
-   font-family: arial,sans-serif; 
+ 
 }
-.club-header .widget-user-image>img{
+
+.club-header .widget-user-header{
+ padding-bottom: 10px;
+}
+
+.club-header .widget-user-image{
  width: 100px;
     height: 100px;
     float: left;
 }
 
+.club-header .widget-user-image img{
+ width: 100px;
+    height: 100px;
+  
+}
+.club-header .widget-user-image h3{
+    margin-top: 5px;
+    padding: 0;
+   
+    font-size: 18px;
+    line-height: 18px;
+}
+
 .club-header .widget-user-header {
     background: #9cf;
-    height: 140px;
- 
+    
 }
 
 .club-header .widget-user-header small {
@@ -41,56 +76,58 @@
     margin-bottom: 5px;
     font-size: 26px;
     line-height: 26px;
-    font-weight: 400;
+    font-weight: 500;
     margin-left: 120px;
 }
 
 .club-header .widget-user-desc {
     margin-left: 120px;
-    margin-top: 5px;
-    font-size: 16px;
-    line-height: 16px;
+    margin-top: 8px;
+    margin-bottom: 15px;
+    font-size: 18px;
+    line-height: 18px;
 }
 
 .club-header .widget-user-desc img {
     vertical-align: middle;
     margin-right: 5px;
+    margin-top: 3px;
     float: left;
 }
 
 .club-header .widget-user-raiting {
-    margin-left: 120px;
+    margin-left: 110px;
     margin-top: 10px;
     font-size: 24px;
-    font-weight: 400;
+    font-weight: 500;
 }
 
 
 .club-header .description-block>.description-header {
     margin: 0;
     font-weight: 400;
-     font-family: arial,sans-serif;
+  
 }
 
 
 .club-header .description-block h5 {
      font-size: 24px;
-     font-weight: 400;
+     font-weight: 500;
  }
 .club-header .description-block h6 {
     font-size: 15px;
-    font-weight: 400;
+    font-weight: 500;
     line-height: 18px;
 }
 
 
 .club-header .description-block>.description-text {
     text-transform: none;
-    font-weight: 100;
+    font-weight: 300;
     font-size: 12px;
     margin: 15px 0;
     line-height: 25px;
-     color: #888;
+     color: #757575;
 }
 
 .club-header .box-footer {
@@ -108,16 +145,41 @@
 
 .club-header .nav>li>a {
     padding: 10px 15px;
-    font-family: Arial,sans-serif;
-    font-size: 12px;
-    color: #888;
+     font-size: 12px;
+    color: #757575;
 }
 .club-header .nav>li>a>span {
     color: #333;
     font-size: 13px;
+    font-weight: 500;
 }
+
+.club-header .btn-app {
+     display: inline-block;
+     padding: 5px 10px;
+     background-color: #fff;
+}
+
+.club-header .btn-app>.value {
+    font-size: 24px;
+    line-height: 36px;
+    color: #333;
+    display: block;
+}
+
 
 .box {
-    font-family: Arial,sans-serif;
+ background: #fff;
+    position: relative;
+    box-shadow: 0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24);
+    border: none;
 }
 
+.box .box-title {
+    text-transform: uppercase;
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 16px;
+    margin: 10px 0 5px 15px;
+    overflow: hidden;
+ }

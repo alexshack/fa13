@@ -40,6 +40,7 @@ app.post('/admin/getcalendarentry', admin.getCalendarEntryWithDate);
 app.post('/admin/uploadallfile', admin.uploadAllFile);
 app.get('/', pageGenerator.renderPage);
 app.get('/player', playerController.index);
+app.get('/player/:playerId', playerController.show);
 app.get('/club/:clubId', clubController.show);
 app.get('/admin', admin.index);
  
