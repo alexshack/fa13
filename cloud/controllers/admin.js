@@ -44,15 +44,23 @@ exports.getCalendarEntryWithDate = function(req, res) {
 exports.uploadAllFile = function (req, res) {
     var parseAll = require('cloud/controllers/parseAll');
     var calId = req.body.calendarEntryId;
-    var fileData64 = req.body.b64.replace("data:application/zip;base64,", "");
+
+    var fileData64 = req.body.b64;
+
+    if (!calId || calId == "" || typeof calId  == "undefined"|| typeof  fileData64 == "undefined" || !fileData64 || fileData64 == "") {
+        console.log("Не выбрана запись календаря, или не выбран файл импорта!");
+
+        return res.send({
+                    "result":"error",
+                    "message": "Не выбрана запись календаря, или не выбран файл импорта!"
+                });
 
 
-    if (!calId || calId == "" || !fileData64 || fileData64 == "") {
-        res.render('admin/test', {
-            errors: "Empty calendar Id got or no file sent!"
-        });
+
     }
 
+    fileData64 = fileData64.replace("data:application/zip;base64,", "");
+    console.log("file data is not empty!");
 
     var timetableQuery = new Parse.Query("Timetable");
     timetableQuery.get(calId, {
@@ -62,23 +70,40 @@ exports.uploadAllFile = function (req, res) {
             parseAll.parseAllFileOnRequest(calendarEntry, fileData64).then(function(result) {
 
                 console.log(result);
-                res.render('admin/test', {
-                    content: JSON.stringify(result),
-                    contentObj:result
+                //res.render('admin/test', {
+                //    content: JSON.stringify(result),
+                //    contentObj:result
+                //});
+
+                return  res.send({
+                    "result":"success",
+                    "message": "Импорт произведен успешно"
                 });
+
             }, function(error) {
                 console.log("Error on parsing all file: " + error);
-                res.render('admin/test', {
-                    errors: "Error on parsing all file: " + error
+                //res.render('admin/test', {
+                //    errors: "Error on parsing all file: " + error
+                //});
+
+                return  res.send({
+                    "result":"error",
+                    "message": "При парсинге файла произошла ошибка"
                 });
+
             });
 
         },
 
         error: function (object, error) {
             console.log("Error on getting calendar entry with id: " + calId + ". Error: " + error.code + " " + error.message);
-            res.render('admin/test', {
-                errors: "Error on getting calendar entry with id: " + calId + ". Error: " + error.code + " " + error.message
+            //res.render('admin/test', {
+            //    errors: "Error on getting calendar entry with id: " + calId + ". Error: " + error.code + " " + error.message
+            //});
+
+            return res.send({
+                "result":"error",
+                "message": "Не найдена запись в календаре!"
             });
 
         }
@@ -89,36 +114,41 @@ exports.uploadAllFile = function (req, res) {
 
 exports.updateTimetable = function (req, res) {
     //admin/updatetimetable?from=8-2015&to=12-2015
-    var from = req.query.from.split("-");
-    var to = req.query.to.split("-");
-    var fromDate = new Date(from[0] + " 01 " + from[1]);
+
+    //return res.send({
+    //    "result":"error",
+    //    "message": req.query.from + " " + req.query.to
+    //});
+
+    var from = req.query.from.split(".");
+    var to = req.query.to.split(".");
+
+    var fromDate = new Date(from[1] + " " + from[0] + " " + from[2]);
+    var toDate = new Date(to[1] + " " + to[0] + " " + to[2]);
+
+    //
+    //var m = parseInt(to[0]);
+    //var y = parseInt(to[1]);
+    //if (m == 12) {
+    //    y++;
+    //    m = 1;
+    //} else {
+    //    m++;
+    //}
 
 
-    var toDate = new Date(to[0] + " 01 " + to[1]);
-
-    var m = parseInt(to[0]);
-    var y = parseInt(to[1]);
-    if (m == 12) {
-        y++;
-        m = 1;
-    } else {
-        m++;
-    }
-
-
-    var fToDate = new Date(m + " 01 " + y);
     var seasonQuery = new Parse.Query("Season");
 
     // console.log(fromDate + " - " + toDate);
 
     seasonQuery.lessThanOrEqualTo("validFrom", fromDate);
-    seasonQuery.greaterThanOrEqualTo("validTo", fToDate);
+    seasonQuery.greaterThanOrEqualTo("validTo", toDate);
     seasonQuery.first({
         success: function (season) {
             if (season) {
                 var timetableQuery = new Parse.Query("Timetable");
                 timetableQuery.greaterThanOrEqualTo("date", fromDate);
-                timetableQuery.lessThanOrEqualTo("date", fToDate);
+                timetableQuery.lessThanOrEqualTo("date", toDate);
                 timetableQuery.limit(1000);
                 timetableQuery.find({
                     success: function (oldEntries) {
@@ -133,8 +163,13 @@ exports.updateTimetable = function (req, res) {
                                 },
                                 error: function (error) {
                                     console.log("Error on deleting old timetable entries: " + error.code + " " + error.message);
-                                    res.render('admin/test', {
-                                        errors: "Error on deleting old timetable entries: " + error.code + " " + error.message
+                                    //res.render('admin/test', {
+                                    //    errors: "Error on deleting old timetable entries: " + error.code + " " + error.message
+                                    //});
+
+                                    return res.send({
+                                        "result":"error",
+                                        "message": "Ошибка при удалении старых записей календаря"
                                     });
 
                                     //res.send(error);
@@ -147,24 +182,42 @@ exports.updateTimetable = function (req, res) {
                     error: function (error) {
                         console.log("Error on finding timetable: " + error.code + " " + error.message);
                         // res.send(error);
-                        res.render('admin/test', {
-                            errors: "Error on finding timetable: " + error.code + " " + error.message
+                        //res.render('admin/test', {
+                        //    errors: "Error on finding timetable: " + error.code + " " + error.message
+                        //});
+
+                        return res.send({
+                            "result":"error",
+                            "message": "Ошибка при поиске старых записей календаря"
                         });
                     }
                 })
             } else {
                 // res.send({"error":"No active season found"})
-                res.render('admin/test', {
-                    errors: "No active season found"
+                //res.render('admin/test', {
+                //    errors: "No active season found"
+                //});
+
+                return res.send({
+                    "result":"error",
+                    "message": "Не найден активный сезон!"
                 });
+
             }
         },
         error: function (error) {
-            console.log("Error on finding Currencies: " + error.code + " " + error.message);
-            res.render('admin/test', {
-                errors: "Error on finding Currencies: " + error.code + " " + error.message
-            });
+            console.log("Error on finding season: " + error.code + " " + error.message);
+            //res.render('admin/test', {
+            //    errors: "Error on finding Currencies: " + error.code + " " + error.message
+            //});
             //res.send(error);
+
+            return res.send({
+                "result":"error",
+                "message": "Ошибка при поиске сезона!"
+            });
+
+
         }
     });
 };
@@ -176,17 +229,27 @@ function createNewEntry(res, dateFrom, dateTo, season) {
     //var iconv  = require('cloud/lib/node_modules/iconv-lite/lib/index');
 
 
-    var years = dateTo[1] - dateFrom[1];
-    var months = dateTo[0] - dateFrom[0] + 1;
+    var years = dateTo[2] - dateFrom[2];
+    var months = dateTo[1] - dateFrom[1] + 1;
+
+    var fromDate = new Date(dateFrom[1] + " " + dateFrom[0] + " " + dateFrom[2]);
+
+    var toDate = new Date(dateTo[1] + " " + dateTo[0] + " " + dateTo[2]);
 
     if (years > 0) {
-        months = 12 - dateFrom[0] + dateTo[0];
+        months = 12 - dateFrom[1] + dateTo[1];
     }
 
     if (months > 12 || years > 1) {
-        res.render('admin/templateItem', {
-            errors: "Обновление календаря, сроком более одного года - бессмысленно!"
+        //res.render('admin/templateItem', {
+        //    errors: "Обновление календаря, сроком более одного года - бессмысленно!"
+        //});
+
+        return res.send({
+            "result":"error",
+            "message": "Обновление календаря, сроком более одного года - бессмысленно!"
         });
+
         //res.send({"Error":"Обновление календаря, сроком более одного года - бессмысленно!"})
 
     }
@@ -197,27 +260,33 @@ function createNewEntry(res, dateFrom, dateTo, season) {
     for (var i = 0; i < months; i++) {
 
 
-        if (JSON.parse(dateFrom[0]) + i > 12) {
-            dateFrom[0] = 0;
-            dateFrom[1]++;
+        if (JSON.parse(dateFrom[1]) + i > 12) {
+            dateFrom[1] = 0;
+            dateFrom[2]++;
         }
 
-        dates.push({"month": JSON.parse(dateFrom[0]) + i, "year": dateFrom[1]});
+        dates.push({"month": JSON.parse(dateFrom[1]) + i, "year": dateFrom[2]});
 
     }
 
     if (dates.length == 0) {
-        res.render('admin/test', {
-            errors: "Выбран очень маленький период времени!"
+        //res.render('admin/test', {
+        //    errors: "Выбран очень маленький период времени!"
+        //});
+
+        return res.send({
+            "result":"error",
+            "message": "Выбран очень маленький период времени!"
         });
+
         //   res.send({"Error":"Выбран очень маленький период времени!"})
     }
 
     var m = 0;
     var events = [];
-    getCalendar(dates[m]);
+    getCalendar(dates[m], fromDate, toDate);
 
-    function getCalendar(date) {
+    function getCalendar(date, from, to) {
 
 
         if (m == dates.length) {
@@ -238,17 +307,29 @@ function createNewEntry(res, dateFrom, dateTo, season) {
                 success: function (objects) {
                     console.log("RENDERING");
                     //console.log(JSON.stringify(events));
+                    //
+                    //res.render('admin/test', {
+                    //    content: JSON.stringify(events),
+                    //    contentObj: events
+                    //})
 
-                    res.render('admin/test', {
-                        content: JSON.stringify(events),
-                        contentObj: events
-                    })
+
+                    return res.send({
+                        "result":"success",
+                        "message": "Календарь успешно обновлен"
+                    });
+
 
                 },
                 error: function (error) {
                     console.log("Error on creating timetable entries: " + error.code + " " + error.message);
-                    res.render('admin/test', {
-                        errors: "Error on creating old timetable entries: " + error.code + " " + error.message
+                    //res.render('admin/test', {
+                    //    errors: "Error on creating old timetable entries: " + error.code + " " + error.message
+                    //});
+
+                    return res.send({
+                        "result":"error",
+                        "message": "Ошибка при создании записи календаря!"
                     });
 
                     //res.send(error);
@@ -293,14 +374,20 @@ function createNewEntry(res, dateFrom, dateTo, season) {
                         if (error) {
                             console.log("Error on parsing timetable from site. Response: " + error.message);
                             //res.send({"Error":"Error on parsing timetable from site. Response: " + error.message});
-                            res.render('admin/test', {
-                                errors: "Error on parsing timetable from site. Response: " + error.message
-                            })
+                            //res.render('admin/test', {
+                            //    errors: "Error on parsing timetable from site. Response: " + error.message
+                            //})
+
+
+                            return res.send({
+                                "result":"error",
+                                "message": "Ошибка при парсинге записи календаря!"
+                            });
 
                         } else {
 
                             //getting event
-                            getEvents(htmlparser.DomUtils.getElementsByTagName("td", dom), year, month, timetableJS);
+                            getEvents(htmlparser.DomUtils.getElementsByTagName("td", dom), year, month, timetableJS, from, to);
 
                             //events.push(jsevent);
                             // var cells =  json["query"].results.body.div.div[0].div[2].div.table.tbody;
@@ -308,7 +395,7 @@ function createNewEntry(res, dateFrom, dateTo, season) {
 
 
                             events = timetableJS;
-                            getCalendar(dates[m]);
+                            getCalendar(dates[m], from, to);
                         }
 
                     },
@@ -323,7 +410,7 @@ function createNewEntry(res, dateFrom, dateTo, season) {
 
 }
 
-function getEvents(monthEntries, year, month, result) {
+function getEvents(monthEntries, year, month, result, fromDate, toDate) {
 
     var tEvents = [];
 
@@ -369,7 +456,7 @@ function getEvents(monthEntries, year, month, result) {
             var eventDate = new Date(month + " " + ev[0] + " " + year + " 00:00:00 GMT+0300");
 
 
-            if (ev[2] && ev[2].match(matchEvents)) {
+            if (ev[2] && ev[2].match(matchEvents) && eventDate >= fromDate && eventDate<=toDate) {
                 // console.log(ev[2].match(matchEvents)[0]);
                 //resultEv.push(eventDate);
                 var eventArray = [];

@@ -1,82 +1,162 @@
-        <div class="col-md-4">
-            <div class="box box-primary">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Ручная загрузка all-а</h3>
-                    <div class="box-tools pull-right">
-                        <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-                    </div><!-- /.box-tools -->
-                </div><!-- /.box-header -->
-                <div class="box-body">
-                    <div class="form-group">
-                        <label>Выберите дату:</label>
+<div class="col-md-4">
 
-                        <div class="input-group">
+    <div class="box box-primary allLoader" id="allLoader">
+        <div class="box-header with-border">
+            <h3 class="box-title">Ручная загрузка all-а</h3>
 
-
-                            <div class="input-group-addon">
-                                <i class="fa fa-calendar"></i>
-                            </div>
-                            <input type="text" class="datepicker form-control" id="date">
-                            </div>
-                        <!-- /.input group -->
-                    </div>
-                    <div class="form-group" id="hidden_area" style="display:none">
-                        <p class="form-control" id="event"></p>
-                        <input type="file" id="form-file">
-                        <p id="mess" class="help-block">Выберите all*.zip</p>
-                    </div>
-                </div>
-                <div class="box-footer" id="date_submit" style="display:none">
-                    <button type="submit" class="btn btn-primary" onclick="updateAllFile()">Отправить</button>
-                </div>
+            <div class="box-tools pull-right">
+                <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
             </div>
+            <!-- /.box-tools -->
         </div>
+        <!-- /.box-header -->
+
+        <div class="box-body" id="uploadAllBody">
+
+
+
+            <div class="form-group">
+                <label>Выберите дату:</label>
+
+                <div class="input-group">
+
+
+                    <div class="input-group-addon">
+                        <i class="fa fa-calendar"></i>
+                    </div>
+                    <input type="text" class="datepicker form-control" id="date">
+                </div>
+                <p class="help-block">Укажите дату данных</p>
+                <!-- /.input group -->
+            </div>
+
+            <div class="form-group" id="hidden_area" style="display:none">
+                <p class="form-control" id="event"></p>
+                <input type="file" id="form-file" accept=".zip">
+
+                <p class="help-block">Выберите all*.zip</p>
+
+
+            </div>
+
+            <div id="uploadAlert" class="alert alert-danger alert-dismissible" style="display:none">
+                <button type="button" class="close" aria-hidden="true" onclick="$('#uploadAlert').hide(500)">×</button>
+                <h4><i class="icon fa fa-ban"></i> Ошибка!</h4>
+
+                <p id="errorUploadAll"></p>
+            </div>
+
+            <div id="uploadSAlert" class="alert alert-success alert-dismissible" style="display:none">
+                <button type="button" class="close" aria-hidden="true" onclick="$('#uploadSAlert').hide(500)">×</button>
+                <h4><i class="icon fa fa-check"></i> Сообщение!</h4>
+
+                <p id="messUploadAll"></p>
+            </div>
+
+        </div>
+        <div class="box-footer" id="date_submit" style="display:none">
+            <button type="submit" class="btn btn-primary" onclick="updateAllFile()">Отправить</button>
+        </div>
+
+    </div>
+
+    <!--<div id="allLoaderSpinner" class="allLoader-overlay-down" height="100%" width="100%" style="position: absolute; top: 0%;left: 0%;z-index:-5000; background: rgba(54, 25, 25, .5);">-->
+        <!--<div style="position: absolute; top: 50%;left: 50%;">-->
+            <!--<i class="fa fa-spin fa-spinner fa-2x"></i>&nbsp;-->
+        <!--</div>-->
+    <!--</div>-->
+
+
+    <div class="allLoader-overlay-down">
+        <!--<div style="position: relative; top: 40%;left: 40%;background: rgba(54, 25, 25, .5);">-->
+            <!--<i class="fa fa-spin fa-spinner fa-2x"></i>&nbsp;-->
+        <!--</div>-->
+    </div>
+
+</div>
+
 
 
 
 <script>
 
-//    $('#date').datepicker({
-//        format: "dd.mm.yyyy",
-//        autoclose: true
-//    });
-//
-//var datepicker = $.fn.datepicker.noConflict(); // return $.fn.datepicker to previously assigned value
-//$.fn.bootstrapDP = datepicker;
 
-$('.datepicker').datepicker({
-    format: "dd.mm.yyyy",
-    autoclose: true
-});
+    function showSpinner(divId) {
+
+       //$("#"+divId).addClass("jumbotron-overlay-down");
+
+        var div = $("#"+divId+"Spinner");
+        if(div.length) {
+            div.css({ position: "relative"})
+            div.css('z-index', 5000)
+            div.show("fast")
+        }
+    }
+
+
+    function hideSpinner(divId) {
+       // $("#"+divId).removeClass("jumbotron-overlay-down");
+        var div = $("#"+divId+"Spinner");
+        if(div.length) {
+            div.css('z-index', -5000)
+            div.hide(10);
+        }
+    }
+
+    //    $('#date').datepicker({
+    //        format: "dd.mm.yyyy",
+    //        autoclose: true
+    //    });
+    //
+    //var datepicker = $.fn.datepicker.noConflict(); // return $.fn.datepicker to previously assigned value
+    //$.fn.bootstrapDP = datepicker;
+
+   // $("#uploadAllBody").overlayout("uploadAllBody");
 
     var b64;
     var calendarEntryId;
 
     //$("#date").val(new Date());
     $("#date").change(function () {
-        console.log("date = " + $("#date").val());
-        $.ajax({
-            url: '/admin/getcalendarentry',
-            type: 'POST',
-            data: {
-                "ondate": $("#date").val()
-            }
 
-        }).done(function (response) {
+        if (typeof $("#date").val() != "undefined" && $("#date").val() != "") {
 
-            if (response.errors) {
-                $('#hidden_area').attr("style", "display:none;");
-                $('#date_submit').attr("style", "display:none;");
+           // $("#uploadAllBody").overlay("uploadAllBody");
 
-            } else {
-                calendarEntryId = response.calendarEntryId;
-                $('#event').html(response.events);
-                $('#hidden_area').attr("style", "display:block;");
-                $('#date_submit').attr("style", "display:block;");
-            }
+            showSpinner("allLoader");
+
+            $.ajax({
+                url: '/admin/getcalendarentry',
+                type: 'POST',
+                data: {
+                    "ondate": $("#date").val()
+                }
+
+            }).done(function (response) {
+               // $("#uploadAllBody").overlayout("uploadAllBody");
+
+                hideSpinner("allLoader");
+
+                if (response.errors) {
+//                $('#hidden_area').attr("style", "display:none;");
+//                $('#date_submit').attr("style", "display:none;");
+                    $('#hidden_area').hide(100);
+                    $('#date_submit').hide(100);
+
+                } else {
+                    calendarEntryId = response.calendarEntryId;
+                    $('#event').html(response.events);
+//                $('#hidden_area').attr("style", "display:block;");
+//                $('#date_submit').attr("style", "display:block;");
+
+                    $("#hidden_area").show("fast");
+                    $('#date_submit').show("fast");
+                }
 
 
-        });
+            });
+        }
+
     });
     function readFile(input) {
         if (input.files && input.files[0]) {
@@ -96,7 +176,8 @@ $('.datepicker').datepicker({
     function updateAllFile() {
 
         //event.preventDefault();
-
+       // $("#uploadAllBody").overlay();
+        showSpinner("allLoader");
         $.ajax({
             url: '/admin/uploadallfile',
             type: 'POST',
@@ -106,10 +187,26 @@ $('.datepicker').datepicker({
             }
 
         }).done(function (response) {
+            //$("#uploadAllBody").overlayout();
+            hideSpinner("allLoader");
+            console.log(response);
 
-            b64 = null;
-            $('#fileName').val("");
-            $("#form-file").val("");
+            if (response["result"] == "error") {
+                $("#errorUploadAll").html(response["message"]);
+                $("#uploadAlert").show("slow");
+            } else {
+                b64 = null;
+                $('#fileName').val("");
+                $("#form-file").val("");
+                $("#messUploadAll").html(response["message"]);
+                $("#errorUploadAll").html("");
+                $('#hidden_area').hide(100);
+                $('#date_submit').hide(100);
+                $("#uploadAlert").hide(100);
+                $("#date").val("");
+                $("#uploadSAlert").show("slow");
+            }
+
 
         });
     }

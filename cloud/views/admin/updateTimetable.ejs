@@ -13,62 +13,85 @@
                             <div class="input-group-addon">
                                 <i class="fa fa-calendar"></i>
                             </div>
-                            <input type="text" class="form-control pull-left active" id="dateRangeTimetable">
+
+                            <div class="input-group input-daterange">
+                                <input id="from" type="text" class="datepicker form-control">
+                                <span class="input-group-addon"> по </span>
+                                <input id="to" type="text" class="datepicker form-control">
+                            </div>
 
                         </div>
-                        <p id="mess" class="help-block">Укажите период загрузки</p>
+                        <p class="help-block">Укажите период загрузки</p>
+
+                        <div id="updateTimeTableAlert" class="alert alert-danger alert-dismissible" style="display:none">
+                            <button type="button" class="close" aria-hidden="true" onclick="$('#updateTimeTableAlert').hide(500)">×</button>
+                            <h4><i class="icon fa fa-ban"></i> Ошибка!</h4>
+                            <p id="errorUpdateTimeTable"></p>
+                        </div>
+
+
+                        <div id="messSUpdateTimeTable" class="alert alert-success alert-dismissible" style="display:none">
+                            <button type="button" class="close" aria-hidden="true" onclick="$('#messSUpdateTimeTable').hide(500)">×</button>
+                            <h4><i class="icon fa fa-check"></i> Сообщение!</h4>
+                            <p id="messUpdateTimeTable"></p>
+                        </div>
 
                         <!-- /.input group -->
                     </div>
                 </div>
-                <div class="box-footer" id="date_submit" style="display:none">
+                <div class="box-footer" id="dates_submit" style="display:none">
                     <button type="submit" class="btn btn-primary" onclick="updateTimeTable()">Загрузить</button>
                 </div>
+
+
             </div>
         </div>
 
 <script>
-    $('#dateRangeTimetable').daterangepicker({
-        //format: "DD.MM.YYYY"
 
-        "locale": {
-            "format": "DD.MM.YYYY",
-            "separator": " - ",
-            "applyLabel": "Применить",
-            "cancelLabel": "Отменить",
-            "fromLabel": "С",
-            "toLabel": "По",
-            "customRangeLabel": "Произвольно",
-            "daysOfWeek": [
-                "Вс",
-                "Пн",
-                "Вт",
-                "Ср",
-                "Чт",
-                "Пт",
-                "Сб"
-            ],
-            "monthNames": [
-                "Январь",
-                "Февраль",
-                "Март",
-                "Апрель",
-                "Май",
-                "Июнь",
-                "Июль",
-                "Август",
-                "Сентябрь",
-                "Октябрь",
-                "Ноябрь",
-                "Декабрь"
-            ],
-            "firstDay": 1
+
+    $(".datepicker").change(function () {
+
+        if ((typeof $("#from").val() != "undefined" && $("#from").val() != "") && (typeof $("#to").val() != "undefined" && $("#to").val() != "")) {
+            $("#dates_submit").show("fast");
+        } else {
+            $("#dates_submit").hide(100);
         }
-
     });
 
     function updateTimeTable() {
-        console.log($('#dateRangeTimetable').val());
+
+        $.ajax({
+            url: '/admin/updatetimetable',
+            type: 'GET',
+            data: {
+                "from": $("#from").val(),
+                "to": $("#to").val()
+            }
+
+        }).done(function (response) {
+            console.log(response);
+
+            if(response["result"] == "error") {
+                console.log(response["message"]);
+                $("#errorUpdateTimeTable").html(response["message"]);
+                $("#updateTimeTableAlert").show( "slow" );
+            } else {
+                b64 = null;
+                $('#to').val("");
+                $("#from").val("");
+                $("#messUpdateTimeTable").html(response["message"]);
+                $("#errorUpdateTimeTable").html("");
+                $("#updateTimeTableAlert").hide(100);
+                $("#dates_submit").hide(100);
+                $("#messSUpdateTimeTable").show( "slow" );
+
+            }
+
+
+
+        });
+
     }
 
 </script>
