@@ -10,7 +10,7 @@ var envarlib = require('cloud/controllers/Envar');
 
 exports.initTurnirs = function(req, res) {
     var turnirQuery = new Parse.Query('Turnir');
-
+    turnirQuery.limit(500);
     turnirQuery.find({
                 success:function(turnirs) {
                     res.send({turnirs:turnirs})
@@ -39,6 +39,7 @@ exports.initClubs = function(req, res) {
             console.log(entyId);
             //а тут получаем запись календаря в виде объекта календаря
             envar.getVarAsObject("currentCalendarEntry").then(function(calendarEntry) {
+                clubQuery.limit(2000);
                 clubQuery.equalTo('calendarEntry', calendarEntry);
                 clubQuery.find({
                     success:function(clubs) {
