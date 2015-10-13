@@ -390,7 +390,7 @@ function parseAll(allText, calendarEntry) {
 
                 manager.set("email", s2[4]);
                 manager.set("icq", s2[5]);
-                manager.set("matches", s2[6]);
+                manager.set("matches", parseInt(s2[6]));
                 manager.set("calendarEntry", calendarEntry);
             }
 
@@ -398,48 +398,48 @@ function parseAll(allText, calendarEntry) {
             var s3 = arr[i].split('/');
 
             if (Man) {
-                manager.set("fm", s3[4]);
+                manager.set("fm", parseInt(s3[4]));
                 managers.push(manager);
                 club.set("manager", manager);
             }
-            club.set("stadionSize", s3[0]);
-            club.set("stadionState", s3[1]);
-            club.set("bum", s3[2]);
-            club.set("fc", s3[3]);
-            club.set("raiting", s3[5]);
-            club.set("base", s3[6]);
-            club.set("baseState", s3[7]);
+            club.set("stadionSize", parseInt(s3[0]));
+            club.set("stadionState", parseInt(s3[1]));
+            club.set("bum", parseInt(s3[2]));
+            club.set("fc", parseInt(s3[3]));
+            club.set("raiting", parseInt(s3[5]));
+            club.set("base", parseInt(s3[6]));
+            club.set("baseState", parseInt(s3[7]));
 
             i++;
             s = arr[i].split('/');
 
-            club.set("school", s[0]);
-            club.set("schoolState", s[1]);
-            club.set("coach", s[2]);
-            club.set("goalkeepersCoach", s[3]);
-            club.set("defendersCoach", s[4]);
-            club.set("midfieldersCoach", s[5]);
-            club.set("forwardsCoach", s[6]);
-            club.set("fitnessCoach", s[7]);
-            club.set("moraleCoach", s[8]);
-            club.set("doctorQualification", s[9]);
-            club.set("doctorPlayers", s[10]);
-            club.set("scout", s[11]);
+            club.set("school", parseInt(s[0]));
+            club.set("schoolState", parseInt(s[1]));
+            club.set("coach", parseInt(s[2]));
+            club.set("goalkeepersCoach", parseInt(s[3]));
+            club.set("defendersCoach", parseInt(s[4]));
+            club.set("midfieldersCoach", parseInt(s[5]));
+            club.set("forwardsCoach", parseInt(s[6]));
+            club.set("fitnessCoach", parseInt(s[7]));
+            club.set("moraleCoach", parseInt(s[8]));
+            club.set("doctorQualification", parseInt(s[9]));
+            club.set("doctorPlayers", parseInt(s[10]));
+            club.set("scout", parseInt(s[11]));
 
             i++;
             s = arr[i].split('/');
 
             if (s.length > 0) {
-                club.set("homeTop", s[0]);
+                club.set("homeTop", parseInt(s[0]));
             }
             if (s.length > 1) {
-                club.set("awayTop", s[1]);
+                club.set("awayTop", parseInt(s[1]));
             }
             if (s.length > 1) {
-                club.set("homeBottom", s[2]);
+                club.set("homeBottom", parseInt(s[2]));
             }
             if (s.length > 1) {
-                club.set("awayBottom", s[3]);
+                club.set("awayBottom", parseInt(s[3]));
             }
 
 
@@ -483,7 +483,7 @@ function parseAll(allText, calendarEntry) {
                 player.set("calendarEntry", calendarEntry);
                 player.set("date", date);
                 player.set('clubName', club.get('name'));
-                player.set('number', s[0]);
+                player.set('number', parseInt(s[0]));
                 player.set('name', s[1]);
                 player.set('nationality', s[2]);
 
@@ -530,57 +530,57 @@ function parseAll(allText, calendarEntry) {
                 }
 
                 player.set('positionId', pId);
-                player.set('age', s[4]);
-                player.set('talent', s[5]);
-                player.set('experience', s[6]);
-                player.set('fitness', s[7]);
-                player.set('morale', s[8]);
-                player.set('strength', s[9]);
-                player.set('health', s[10]);
-                player.set('price', s[11]);
-                player.set('salary', s[12]);
-                player.set('shooting', s[13]);
-                player.set('passing', s[14]);
-                player.set('crossing', s[15]);
-                player.set('dribbling', s[16]);
-                player.set('tackling', s[17]);
-                player.set('heading', s[18]);
-                player.set('speed', s[19]);
-                player.set('stamina', s[20]);
-                player.set('reflexes', s[21]);
-                player.set('handling', s[22]);
-                player.set('disqualification', s[23]);
-                player.set('rest', s[24]);
-                player.set('teamwork', s[25]);
-                player.set('games', s[26]);
-                player.set('goalsTotal', s[27]);
-                player.set('goalsMissed', s[28]);
-                player.set('goalsChamp', s[29]);
-                player.set('mark', s[30]);
-                player.set('gamesCareer', s[31]);
-                player.set('goalsCareer', s[32]);
-                player.set('yellowCards', s[33]);
-                player.set('redCards', s[34]);
-                player.set('transfer', s[35]);
-                player.set('lease', s[36]);
+                player.set('age', parseInt(s[4]));
+                player.set('talent', parseInt(s[5]));
+                player.set('experience', parseInt(s[6]));
+                player.set('fitness', parseInt(s[7]));
+                player.set('morale', parseInt(s[8]));
+                player.set('strength', parseInt(s[9]));
+                player.set('health', parseInt(s[10]));
+                player.set('price', parseInt(s[11]));
+                player.set('salary', parseInt(s[12]));
+                player.set('shooting', parseInt(s[13]));
+                player.set('passing', parseInt(s[14]));
+                player.set('crossing', parseInt(s[15]));
+                player.set('dribbling', parseInt(s[16]));
+                player.set('tackling', parseInt(s[17]));
+                player.set('heading', parseInt(s[18]));
+                player.set('speed', parseInt(s[19]));
+                player.set('stamina', parseInt(s[20]));
+                player.set('reflexes', parseInt(s[21]));
+                player.set('handling', parseInt(s[22]));
+                player.set('disqualification', parseInt(s[23]));
+                player.set('rest', parseInt(s[24]));
+                player.set('teamwork', parseInt(s[25]));
+                player.set('games', parseInt(s[26]));
+                player.set('goalsTotal', parseInt(s[27]));
+                player.set('goalsMissed', parseInt(s[28]));
+                player.set('goalsChamp', parseInt(s[29]));
+                player.set('mark', parseInt(s[30]));
+                player.set('gamesCareer', parseInt(s[31]));
+                player.set('goalsCareer', parseInt(s[32]));
+                player.set('yellowCards', parseInt(s[33]));
+                player.set('redCards', parseInt(s[34]));
+                player.set('transfer', parseInt(s[35]));
+                player.set('lease', parseInt([36]));
                 player.set('birthplace', s[37]);
 
 
                 if(s[38].match(new RegExp(/(\d{1,2})/))) {
-                    player.set('birthdate', s[38].match(new RegExp(/(\d{1,2})/))[1]);
+                    player.set('birthdate', parseInt(s[38].match(new RegExp(/(\d{1,2})/))[1]));
 
                 }
 
                 if(s[38].match(new RegExp(/\((\d{1,2})\)/))) {
 
-                    player.set('birthtour', s[38].match(new RegExp(/\((\d{1,2})\)/))[1]);
+                    player.set('birthtour', parseInt(s[38].match(new RegExp(/\((\d{1,2})\)/))[1]));
                 }
 
                     //player.set('birthtour', f[0].substr(0, f[0].length - 1));
 
 
-                player.set('assists', s[39]);
-                player.set('profit', s[40]);
+                player.set('assists', parseInt(s[39]));
+                player.set('profit', parseInt(s[40]));
                 player.set('playerId', s[41]);
                 player.set('club', club);
                 players.push(player);

@@ -1,0 +1,58 @@
+
+
+
+<script>
+//сюда добавляем все, что нам нужно на всех страницах сайта.
+//данные живут локально на протяжении сессии
+//данные будут храниться в localStorage, прежде чем делать запрос на сервер, нужно проверить наличие актуальных данных в localStorage
+//актуальность проверять по дате, если данные записаны сегодня, то можно смело их использовать, иначе обращаемся к серверу и обновляем данные
+//внимание, все функции тут работают асинхронно, то есть независимо друг от друга, если нужна зависимость, то надо немного по-другому писать
+var turnirs = {};
+var clubs = {};
+
+if(typeof(Storage) !== "undefined") {
+
+    if (sessionStorage.turnirs) {
+        turnirs = JSON.parse(sessionStorage.turnirs);
+        //запускаем функцию, которая инициализирет объекты, которые используют турниры, например выбор турниров в меню
+    } else {
+
+        getTurnirsFromServer();
+    }
+
+
+    if (sessionStorage.clubs) {
+        clubs = JSON.parse(sessionStorage.clubs);
+        //запускаем функцию, которая инициализирет объекты, которые используют клубы, например выбор клуба в меню
+    } else {
+        getClubsFromServer();
+
+    }
+
+} else {
+    getTurnirsFromServer();
+    getClubsFromServer();
+}
+
+
+function getTurnirsFromServer() {
+    $.ajax({
+        url: "/initturnirs",
+        type: "GET"
+    }).done(function (response) {
+        turnirs = response;
+        //запускаем функцию, которая инициализирет объекты, которые используют турниры, например выбор турниров в меню
+    });
+}
+
+function getClubsFromServer() {
+    $.ajax({
+        url: "/initclubs",
+        type: "GET"
+    }).done(function (response) {
+        clubs = response;
+        //запускаем функцию, которая инициализирет объекты, которые используют клубы, например выбор клуба в меню
+    });
+}
+
+</script>

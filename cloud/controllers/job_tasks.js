@@ -3,6 +3,8 @@
  */
 
 var parseAll = require('cloud/controllers/parseAll');
+var adminClass = require('cloud/controllers/admin');
+var envarlib = require('cloud/controllers/Envar');
 
 Parse.Cloud.job("parseAllFile", function(request, status) {
 
@@ -32,20 +34,49 @@ Parse.Cloud.job("parseAllFile", function(request, status) {
             var calendarEntry = calendarEntries[0];
 
 
-            parseAll.removeAllForCalendarEntry(calendarEntry).then(function(result) {
+           // console.log("creating envar");
+            var envar = new envarlib.Envar();
 
-                parseAll.parseAllFileOnRequest(calendarEntry, null).then(function(result) {
-                    console.log(result);
-                    status.success(result);
+
+            envar.init().then(function(result) {
+
+                envar.setValueToVar('Timetable', 'currentCalendarEntry', calendarEntry.id, true).then(function (result) {
+
+                    console.log(result + " was saved");
+                   // console.log(result);
+                    getParse();
+
                 }, function(error) {
-                    console.log(error);
-                    status.error(error);
+                    //console.log(error);
+                    getParse();
                 })
             }, function(error) {
-                status.error(error);
+               // console.log(error);
+                getParse();
             });
 
 
+
+            function getParse() {
+                parseAll.removeAllForCalendarEntry(calendarEntry).then(function(result) {
+
+                    parseAll.parseAllFileOnRequest(calendarEntry, null).then(function(result) {
+                        console.log(result);
+                        status.success(result);
+                    }, function(error) {
+                        console.log(error);
+                        status.error(error);
+                    })
+                }, function(error) {
+                    status.error(error);
+                });
+            }
+            //
+            //
+            //adminClass.setEnvar('currentCalendarEntry', 'Timetable', calendarEntry.id).then(function(result) {
+            //    //даже если не удастся сохранить переменную, мы все равно продолжнаем работу, но в лог записать надо
+            //
+            //});
         },
 
         error: function (object, error) {

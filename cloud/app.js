@@ -14,6 +14,7 @@ var pageGenerator = require('cloud/controllers/pageGenerator');
 var admin = require('cloud/controllers/admin');
 var jobs = require('cloud/controllers/job_tasks');
 var parseAll = require('cloud/controllers/parseAll');
+var preloaders = require('cloud/controllers/preloaders');
 var app = express();
  
  
@@ -37,6 +38,8 @@ app.locals._ = _;
 app.get('/admin/updatetimetable', admin.updateTimetable);
 app.post('/admin/getcalendarentry', admin.getCalendarEntryWithDate);
 
+app.get('/initturnirs', preloaders.initTurnirs);
+app.get('/initclubs', preloaders.initClubs);
 app.post('/admin/uploadallfile', admin.uploadAllFile);
 app.get('/', pageGenerator.renderPage);
 app.get('/player', playerController.index);

@@ -41,6 +41,62 @@ exports.getCalendarEntryWithDate = function(req, res) {
     });
 };
 
+exports.setEnvar = function(varName, varClass, varValue) {
+
+    var promise = new Parse.Promise();
+
+    var varQuery = new Parse.Query('Envar');
+    varQuery.equalTo('name', varName);
+    varQuery.equalTo('class', varClass);
+    varQuery.find({
+        success:function(envVars) {
+            if(envVars.length >1) {
+                promise.reject("More than one envVar was found");
+
+            } else if(envVars.length >0) {
+                var envVar = envVars[0];
+
+                envVar.save({
+                    value: varValue
+
+                }).then(function(env) {
+                    promise.resolve("Env var was saved");
+
+                }, function(error) {
+                    promise.reject("Error on saving envVar with name " + varName);
+
+                });
+
+            } else {
+                var envVar = new Parse.Object('Envar');
+
+                envVar.save({
+                    name:varName,
+                    class:varClass,
+                    value: varValue
+
+                }).then(function(env) {
+
+                    promise.resolve("Env var was created and saved");
+
+                }, function(error) {
+                    promise.reject("Error on creating envVar with name " + varName);
+
+                });
+            }
+        },
+        error:function(error) {
+
+            promise.reject("Error on finding envVar with name " + varName);
+
+        }
+    });
+
+
+    return promise;
+
+};
+
 exports.uploadAllFile = function (req, res) {
     var parseAll = require('cloud/controllers/parseAll');
     var calId = req.body.calendarEntryId;
