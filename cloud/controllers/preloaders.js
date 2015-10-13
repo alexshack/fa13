@@ -4,6 +4,8 @@
 //app.get('/initturnirs', preloaders.initTurnirs);
 //app.get('/initclubs', preloaders.initClubs);
 
+
+    //подключение библиотеки переменных окружений
 var envarlib = require('cloud/controllers/Envar');
 
 exports.initTurnirs = function(req, res) {
@@ -23,15 +25,19 @@ exports.initTurnirs = function(req, res) {
 
 exports.initClubs = function(req, res) {
     var clubQuery = new Parse.Query('Club');
+
+    //объект с переменными окружения
     var envar = new envarlib.Envar();
 
-
+    //инициализация (делается для того, что бы взять актуальные данные
     envar.init().then(function(result) {
+
+        //пример того, как получить актуальную запись календаря (ее ИД) из переменных окружения
         if(envar.currentCalendarEntry) {
             var entyId = envar.currentCalendarEntry.value;
 
             console.log(entyId);
-
+            //а тут получаем запись календаря в виде объекта календаря
             envar.getVarAsObject("currentCalendarEntry").then(function(calendarEntry) {
                 clubQuery.equalTo('calendarEntry', calendarEntry);
                 clubQuery.find({
