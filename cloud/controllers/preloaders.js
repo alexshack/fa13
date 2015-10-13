@@ -4,52 +4,47 @@
 //app.get('/initturnirs', preloaders.initTurnirs);
 //app.get('/initclubs', preloaders.initClubs);
 
+var envarlib = require('cloud/controllers/Envar');
 
 exports.initTurnirs = function(req, res) {
+    var turnirQuery = new Parse.Query('Turnir');
+
+    turnirQuery.find({
+                success:function(turnirs) {
+                    res.send({turnirs:turnirs})
+                },
+
+                error:function(turnirs, error) {
+                    res.send({error:"Error on getting turnirs!"});
+                }
+            })
 
 };
 
 exports.initClubs = function(req, res) {
     var clubQuery = new Parse.Query('Club');
-    var today = new Date();
+    var envar = new envarlib.Envar();
 
+
+    envar.init().then(function(result) {
+        if(envar.currentCalendarEntry) {
+            var entyId = envar.currentCalendarEntry.value;
+            clubQuery.equalTo('calendarEntry.id', entyId);
+            clubQuery.find({
+                success:function(clubs) {
+                   return  res.send({clubs:clubs})
+                },
+
+                error:function(clubs, error) {
+                    return res.send({error:"Error on getting clubs! " + error.message});
+                }
+            })
+        } else {
+            return  res.send({error:"no active calendar entry found!"});
+        }
+    }, function(error) {
+        return  res.send({error:"envirs not loaded"});
+    });
 
 };
 
-function getCalendarEntry(date) {
-    var promise = new Parse.Promise();
-   // var date = new Date(ondate[1] + " " + ondate[0] + " " + ondate[2] + " 00:00:00 GMT+0300");
-
-
-    function recursiveCal(date) {
-        var timetableQuery = new Parse.Query("Timetable");
-        timetableQuery.equalTo("date", date);
-        timetableQuery.limit(1000);
-        timetableQuery.find({
-            success: function (entries) {
-                if(entries.length>0) {
-                    var entry = entries[0];
-                    res.send({
-                        "calendarEntryId": entry.id,
-                        "events":entry.get("event")
-                    })
-                } else {
-                    res.send({"errors": "No calendar entry found in date " + ondate})
-                }
-
-
-            },
-            error: function (error) {
-                console.log("Error on finding timetable: " + error.code + " " + error.message);
-                // res.send(error);
-                res.send({
-                    errors: "Error on finding timetable: " + error.code + " " + error.message
-                });
-            }
-        });
-    }
-
-
-
-    return promise;
-}
