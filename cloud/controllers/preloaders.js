@@ -29,16 +29,24 @@ exports.initClubs = function(req, res) {
     envar.init().then(function(result) {
         if(envar.currentCalendarEntry) {
             var entyId = envar.currentCalendarEntry.value;
-            clubQuery.equalTo('calendarEntry.id', entyId);
-            clubQuery.find({
-                success:function(clubs) {
-                   return  res.send({clubs:clubs})
-                },
 
-                error:function(clubs, error) {
-                    return res.send({error:"Error on getting clubs! " + error.message});
-                }
-            })
+            console.log(entyId);
+
+            envar.getVarAsObject("currentCalendarEntry").then(function(calendarEntry) {
+                clubQuery.equalTo('calendarEntry', calendarEntry);
+                clubQuery.find({
+                    success:function(clubs) {
+                        return  res.send({clubs:clubs})
+                    },
+
+                    error:function(clubs, error) {
+                        return res.send({error:"Error on getting clubs! "});
+                    }
+                })
+            }, function(error) {
+                return  res.send({error:"error getting calendar object!"});
+            });
+
         } else {
             return  res.send({error:"no active calendar entry found!"});
         }

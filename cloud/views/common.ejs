@@ -52,7 +52,9 @@ function getTurnirsFromServer() {
     }).done(function (response) {
         if(response.turnirs) {
             turnirs = response.turnirs;
-            sessionStorage.turnirs = JSON.stringify(turnirs);
+            if(typeof(Storage) !== "undefined") {
+                sessionStorage.turnirs = JSON.stringify(turnirs);
+            }
             console.log(turnirs);
             //$("#turnirs").html(JSON.stringify(turnirs));
             //запускаем функцию, которая инициализирет объекты, которые используют турниры, например выбор турниров в меню
@@ -74,11 +76,13 @@ function getClubsFromServer() {
     }).done(function (response) {
         if(response.clubs) {
             clubs = response.clubs;
-            sessionStorage.clubs = JSON.stringify(clubs);
+            if(typeof(Storage) !== "undefined") {
+                sessionStorage.clubs = JSON.stringify(clubs);
+            }
             console.log(clubs);
             //запускаем функцию, которая инициализирет объекты, которые используют клубы, например выбор клуба в меню
 
-            $("#clubs").html(JSON.stringify(clubs));
+           // $("#clubs").html(JSON.stringify(clubs));
 
         } else {
             console.log(response);
