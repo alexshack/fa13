@@ -14,6 +14,7 @@ exports.show = function(req, res) {
   clubQuery.include("calendarEntry");
   clubQuery.include("flag");
   clubQuery.include("manager");
+  clubQuery.include("manager.flag");
   clubQuery.find().then(function(resClub) {
     if (resClub.length > 0) {
       allClub = resClub;

@@ -39,12 +39,14 @@ exports.show = function (req, res) {
 
             var playerObmen = new Parse.Query(Player);
             playerObmen.equalTo("date", resPlayer[0].get('date'));
-            playerObmen.ascending('positionId', 'name', 'date');
+            playerObmen.descending('price', 'strength');
             playerObmen.include("nationalityCode");
             playerObmen.include("club");
             playerObmen.include("club.manager");
-            playerObmen.lessThan('price', JSON.parse(resPlayer[0].get('price'))*1.05);
-            playerObmen.greaterThan('price', JSON.parse(resPlayer[0].get('price'))/1.0476);
+            playerObmen.lessThanOrEqualTo('price', JSON.parse(resPlayer[0].get('price'))*1.05);
+            playerObmen.greaterThanOrEqualTo('price', JSON.parse(resPlayer[0].get('price'))/105*100);
+            playerObmen.notEqualTo('clubName', resPlayer[0].get('clubName'));
+
 
             playerObmen.find().then(function (playersObmen) {
 

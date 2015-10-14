@@ -10,7 +10,7 @@
  
     <section class="content">
         <div class="row">   
-            <div class="col-md-4">
+            <div class="col-md-5">
                 <div class="box box-widget widget-user-2 club-header">
                 <!-- Add the bg color to the header using any of the bg-* classes -->
                     <div class="widget-user-header">
@@ -23,16 +23,31 @@
                         </h5>
                          <div class="widget-user-raiting">
                             <div class="btn-app">
-                                <span class="badge bg-red">22</span>
+                                <% if (club.get('raiting')!=pClub.get('raiting')) { %>
+                                    <% if (club.get('raiting')>pClub.get('raiting')) { %>
+                                        <span class="badge bg-green"><%= club.get('raiting')-pClub.get('raiting') %></span>
+                                    <% } else {%>
+                                        <span class="badge bg-red"><%= club.get('raiting')-pClub.get('raiting') %></span>
+                                    <% }; %>
+                                <% }; %>
+
                                 <div class="value"><%= club.get('raiting') %></div>
                                 <span>Рейтинг</span>
                             </div>
                             <div class="btn-app">
-                                <span class="badge bg-green">1.23</span>
-                                <div class="value">50,19</div>
+                                <span class="badge bg-green">x.xx</span>
+                                <div class="value">xx.xx</div>
                                 <span>Сила</span>
                             </div>
                             <div class="btn-app">
+                               <% if (club.get('bum')!=pClub.get('bum')) { %>
+                                    <% if (club.get('bum')>pClub.get('bum')) { %>
+                                        <span class="badge bg-green"><%= club.get('bum')-pClub.get('bum') %></span>
+                                    <% } else {%>
+                                        <span class="badge bg-red"><%= club.get('bum')-pClub.get('bum') %></span>
+                                    <% }; %>
+                                <% }; %>
+
                                 <div class="value"><%= club.get('bum') %></div>
                                 <span>БУМ</span>
                             </div>
@@ -54,7 +69,7 @@
                                 <div class="description-block">
                                     <div id="sparkline-3"></div>
                                     <span class="description-text">Стоимость игроков</span>
-                                    <h5 class="description-header">40.38 млн.</h5>
+                                    <h5 class="description-header">xx.xx млн.</h5>
                                 </div><!-- /.description-block -->
                             </div><!-- /.col -->
 
@@ -131,11 +146,11 @@
                         <div class="row">
                             <div class="col-xs-6">
                                 <ul class="nav nav-pills nav-stacked">
-                                    <li><a href="#">Игроки <span class="pull-right"> 17</span></a></li>
-                                    <li><a href="#">Средний возраст <span class="pull-right"> 28.00</span></a></li>                                    
-                                    <li><a href="#">Средний талант <span class="pull-right"> 67.18</span></a></li>
-                                    <li><a href="#">Средняя сила <span class="pull-right "> 50.94</span></a></li>
-                                    <li><a href="#">ЗП игроков <span class="pull-right"> 1.21 млн.</span></a></li>                                    
+                                    <li><a href="#">Игроки <span class="pull-right"> <%= players.length %></span></a></li>
+                                    <li><a href="#">Средний возраст <span class="pull-right"> xx.xx</span></a></li>                                    
+                                    <li><a href="#">Средний талант <span class="pull-right"> xx.xx</span></a></li>
+                                    <li><a href="#">Средняя сила <span class="pull-right "> xx.xx</span></a></li>
+                                    <li><a href="#">ЗП игроков <span class="pull-right"> xx.xx млн.</span></a></li>                                    
                                 </ul>
                             </div>
                             <div class="col-xs-6">
@@ -144,7 +159,7 @@
                                     <li><a href="#">Доктор <span class="pull-right "> <%= club.get('doctorPlayers') %>/<%= club.get('doctorQualification') %></span></a></li>
                                     <li><a href="#">Скаут <span class="pull-right"> <%= club.get('scout') %></span></a></li>
                                     <li><a href="#">Тренера <span class="pull-right"> <%= club.get('goalkeepersCoach') %>/<%= club.get('defendersCoach') %>/<%= club.get('midfieldersCoach') %>/<%= club.get('forwardsCoach') %>/<%= club.get('fitnessCoach') %>/<%= club.get('moraleCoach') %></span></a></li>
-                                    <li><a href="#">ЗП тренеров <span class="pull-right"> 200 тыс.</span></a></li>  
+                                    <li><a href="#">ЗП тренеров <span class="pull-right"> yyy тыс.</span></a></li>  
                                 </ul>
                             </div>
                         </div>
@@ -153,8 +168,39 @@
                         <a href="javascript::"><span class="uppercase text-light-blue">Подробная информация о клубе  </span> </a>
                     </div>
                 </div><!-- /.box -->
+                <% if (club.get('manager')) { %>
+                <div class="box box-widget widget-user-2 club-header manager-header box-primary">
+                <!-- Add the bg color to the header using any of the bg-* classes -->
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title">Менеджер клуба <%= club.get('name') %></h3>
+                                                                <div class="box-tools pull-right">
+                            <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        </div>
+                                    </div>
+                    <div class="widget-user-header box-body">
+                        <div class="widget-user-image">
+                            <img class="club-logo" src="" alt="<%= club.get('manager').get('name') %>">
+                        </div>
+                        <h3 class="widget-user-username"><%= club.get('manager').get('name') %></h3>
+                        <h5 class="widget-user-desc"><img src="/dist/img/blank.gif" class="flag flag-<%= club.get('manager').get('flag').get('flag') %>" alt="<%= club.get('manager').get('country') %>" /><span><%= club.get('manager').get('country') %>, <%= club.get('manager').get('city')%></span>
+                        </h5>
+                         <div class="widget-user-raiting">
+                             <div class="btn-app">
+                                <div class="value"><%= club.get('manager').get('matches') %></div>
+                                <span>Матчи</span>
+                            </div>
+                            <div class="btn-app">
+                                <div class="value"><%= club.get('manager').get('fm') %></div>
+                                <span>ФМ</span>
+                            </div> 
+                         </div>
+
+ 
+                    </div>
+                </div>
+                <% }; %>
             </div>
-            <div class="col-md-8">
+            <div class="col-md-7">
                 <div class="box box-primary">
                     <div class="box-header ">
                         <h3 class="box-title">Состав клуба <%= club.get('name') %></h3>
@@ -217,15 +263,7 @@
 
 <script>
 $(".knob").knob();
-var myvalues = [1000, 1200, 920, 927, 931, 1027, 819, 930, 1021];
-  $('#sparkline-1').sparkline(myvalues, {
-    type: 'line',
-    lineColor: '#92c1dc',
-    fillColor: "#ebf4f9",
-    height: '50',
-    width: '80'
-  });
-  myvalues = [515, 519, 520, 522, 652, 810, 370, 627, 319, 630, 921];
+var myvalues = [<% for (var i=aClub.length-1; i!=-1; i--){ %><%= aClub[i].get('fc') %>,<% }; %>];
   $('#sparkline-2').sparkline(myvalues, {
     type: 'line',
     lineColor: '#92c1dc',
