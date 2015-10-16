@@ -29,7 +29,7 @@ function uint8ArrayToArray(uint8Array) {
     return array;
 }
 
-exports.removeAllForCalendarEntry = function(calendarEntry) {
+exports.removeAllForCalendarEntry = function (calendarEntry) {
     var promise = new Parse.Promise();
 
     var classes = ["Player", "Club", "Manager"];
@@ -42,14 +42,14 @@ exports.removeAllForCalendarEntry = function(calendarEntry) {
         query.equalTo("calendarEntry", calendarEntry);
         query.limit(1000);
         query.find({
-            success: function(objects) {
+            success: function (objects) {
 
-                if(objects.length >0) {
+                if (objects.length > 0) {
                     Parse.Object.destroyAll(objects, {
-                        success: function(objects) {
+                        success: function (objects) {
                             c++;
 
-                            if(c == classes.length) {
+                            if (c == classes.length) {
                                 console.log("Old objects were dropped");
                                 promise.resolve(true);
                             } else {
@@ -65,7 +65,7 @@ exports.removeAllForCalendarEntry = function(calendarEntry) {
                 } else {
                     c++;
 
-                    if(c == classes.length) {
+                    if (c == classes.length) {
                         console.log("Old objects were dropped");
                         promise.resolve(true);
                     } else {
@@ -86,13 +86,12 @@ exports.removeAllForCalendarEntry = function(calendarEntry) {
 };
 
 
+exports.parseAllFileOnRequest = function (calendarEntry, fileData64) {
 
-exports.parseAllFileOnRequest = function(calendarEntry, fileData64) {
-
-     var promise = new Parse.Promise();
+    var promise = new Parse.Promise();
 
 
-    if(fileData64) {
+    if (fileData64) {
         unpackAndResume(fileData64, false);
     } else {
         Parse.Cloud.httpRequest({
@@ -100,12 +99,12 @@ exports.parseAllFileOnRequest = function(calendarEntry, fileData64) {
             headers: {
                 'Content-Type': 'application/zip;charset=utf-8'
             },
-            success: function(httpResponse) {
+            success: function (httpResponse) {
 
                 var array = httpResponse.buffer.toString('base64');
                 unpackAndResume(array, true);
             },
-            error: function(error) {
+            error: function (error) {
 
                 promise.reject(error);
 
@@ -118,18 +117,18 @@ exports.parseAllFileOnRequest = function(calendarEntry, fileData64) {
 
         try {
 
-            
+
             var unpacked = new JSZip();
             unpacked.load(array, {base64: true});
             var all = decodeBytes(unpacked.file('all13Ho.b13').asBinary(), 'cp1251');
 
 
             //var parser = new Parse.Promise( parseAll(all, calendarEntry))
-            parseAll(all, calendarEntry).then(function(result) {
+            parseAll(all, calendarEntry).then(function (result) {
 
                 promise.resolve(result);
 
-            }, function(error) {
+            }, function (error) {
 
                 promise.reject(error);
 
@@ -189,18 +188,18 @@ function parseAll(allText, calendarEntry) {
 
                     var tResult = parseTurnir(arr, turnirsObj, turnirs).error;
 
-                    if(tResult) {
+                    if (tResult) {
                         promise.reject(tResult);
                     }
 
-                    i+=2;
+                    i += 2;
 
-                    continueParseAll(flagMap, turnirs, calendarEntry).then(function(res) {
-                        promise.resolve(res);
-                    },
-                    function(error) {
-                        promise.reject(error);
-                    })
+                    continueParseAll(flagMap, turnirs, calendarEntry).then(function (res) {
+                            promise.resolve(res);
+                        },
+                        function (error) {
+                            promise.reject(error);
+                        })
                 },
                 error: function (error) {
                     console.log("Error on getting turnirs: " + error.code + " " + error.message);
@@ -219,21 +218,21 @@ function parseAll(allText, calendarEntry) {
             // res.send(error);
             //status.error("Error on getting flags: " + error.code + " " + error.message);
             result["error"] = "Error on getting flags: " + error.code + " " + error.message;
-           // return result;
+            // return result;
             promise.reject(result["error"]);
 
         }
     });
 
 
-    function continueParseAll(flags,  turnirs, calendarEntry) {
+    function continueParseAll(flags, turnirs, calendarEntry) {
         var promise = new Parse.Promise();
 
         while (i < arr.length) {
-          if(parseClub(flags, arr,  allDate, clubs, managers, players, turnirs, calendarEntry).error) {
-              promise.reject(result["error"]);
-              break;
-          }
+            if (parseClub(flags, arr, allDate, clubs, managers, players, turnirs, calendarEntry).error) {
+                promise.reject(result["error"]);
+                break;
+            }
         }
 
         //теерь все сохраняем в строгой последовательности
@@ -272,7 +271,7 @@ function parseAll(allText, calendarEntry) {
                             error: function (clubs, error) {
 
 
-                                    //status.error("Error on saving clubs: " + error.code + " " + error.message)
+                                //status.error("Error on saving clubs: " + error.code + " " + error.message)
 
                                 result["error"] = "Error on saving clubs: " + error;
                                 //return result;\
@@ -301,7 +300,7 @@ function parseAll(allText, calendarEntry) {
             error: function (turnirs, error) {
 
 
-               // status.error("Error on saving turnirs: " + error.code + " " + error.message)
+                // status.error("Error on saving turnirs: " + error.code + " " + error.message)
                 result["error"] = "Error on saving turnirs: " + error.code + " " + error.message;
                 //return result
                 promise.reject(result["error"]);
@@ -309,7 +308,7 @@ function parseAll(allText, calendarEntry) {
             }
         });
 
-    return promise;
+        return promise;
 
 
     }
@@ -337,7 +336,7 @@ function parseAll(allText, calendarEntry) {
             result["success"] = "ok";
             return result;
 
-        } catch(error) {
+        } catch (error) {
             result["error"] = "Error on parsing turnirs: " + error.code + " " + error.message;
             return result
 
@@ -359,7 +358,6 @@ function parseAll(allText, calendarEntry) {
             club.set("clubId", s1[1]);
             club.set("city", s1[2]);
             club.set("country", s1[3]);
-
 
 
             if (flags[s1[3]]) {
@@ -416,15 +414,34 @@ function parseAll(allText, calendarEntry) {
             club.set("school", parseInt(s[0]));
             club.set("schoolState", parseInt(s[1]));
             club.set("coach", parseInt(s[2]));
+            var coach = parseInt(s[2]);
+
             club.set("goalkeepersCoach", parseInt(s[3]));
+            var goalkeepersCoach = parseInt(s[3]);
+
             club.set("defendersCoach", parseInt(s[4]));
+            var defendersCoach = parseInt(s[4]);
+
             club.set("midfieldersCoach", parseInt(s[5]));
+            var midfieldersCoach = parseInt(s[5]);
+
             club.set("forwardsCoach", parseInt(s[6]));
+            var forwardsCoach = parseInt(s[6]);
+
             club.set("fitnessCoach", parseInt(s[7]));
+            var fitnessCoach = parseInt(s[7]);
+
             club.set("moraleCoach", parseInt(s[8]));
+            var moraleCoach = parseInt(s[8]);
+
             club.set("doctorQualification", parseInt(s[9]));
+            var doctorQualification = parseInt(s[9]);
+
             club.set("doctorPlayers", parseInt(s[10]));
+            var doctorPlayers = parseInt(s[10]);
+
             club.set("scout", parseInt(s[11]));
+            var scout = parseInt(s[11]);
 
             i++;
             s = arr[i].split('/');
@@ -443,8 +460,6 @@ function parseAll(allText, calendarEntry) {
             }
 
 
-
-
             i++;
 
             s = arr[i].split(',');
@@ -454,7 +469,6 @@ function parseAll(allText, calendarEntry) {
 
             club.set("turnirs", s);
 
-            clubs.push(club);
 
             //Добавим просто масив идентификаторов турниров, так как нельзя добавлять релейшены на несохраненные обхекты
 
@@ -472,10 +486,27 @@ function parseAll(allText, calendarEntry) {
             //}
 
 
-
             i++;
 
             var Player = Parse.Object.extend("Player");
+
+
+            var allStrength = 0;
+            var allTallant = 0;
+            var allPrice = 0;
+            var allSalary = 0;
+            var allPlayers = 0;
+            var allAge = 0;
+            var allSV = 0;
+            var allExp = 0;
+            var allFitness = 0;
+            var allMorale = 0;
+            var allHealth = 0;
+            var yelows = 0;
+            var reds = 0;
+            var scorred = 0;
+            var scorredInChamp = 0;
+            var missed = 0;
 
             while (arr[i] != '999') {
                 var s = arr[i].split('/');
@@ -531,52 +562,87 @@ function parseAll(allText, calendarEntry) {
 
                 player.set('positionId', pId);
                 player.set('age', parseInt(s[4]));
+                allAge+=parseInt(s[4]);
+
                 player.set('talent', parseInt(s[5]));
+                allTallant +=parseInt(s[5]);
+
                 player.set('experience', parseInt(s[6]));
+                allExp+=parseInt(s[6]);
+
                 player.set('fitness', parseInt(s[7]));
+                allFitness +=parseInt(s[7]);
+
                 player.set('morale', parseInt(s[8]));
+                allMorale +=parseInt(s[8]);
+
                 player.set('strength', parseInt(s[9]));
+                allStrength +=parseInt(s[9])
+
                 player.set('health', parseInt(s[10]));
+                allHealth +=parseInt(s[10]);
+
                 player.set('price', parseInt(s[11]));
+                allPrice +=parseInt(s[11]);
+
+
                 player.set('salary', parseInt(s[12]));
+                allSalary +=parseInt(s[12]);
+
                 player.set('shooting', parseInt(s[13]));
+                allSV+=parseInt(s[13]);
                 player.set('passing', parseInt(s[14]));
+                allSV+=parseInt(s[14]);
                 player.set('crossing', parseInt(s[15]));
+                allSV+=parseInt(s[15]);
                 player.set('dribbling', parseInt(s[16]));
+                allSV+=parseInt(s[16]);
                 player.set('tackling', parseInt(s[17]));
+                allSV+=parseInt(s[17]);
                 player.set('heading', parseInt(s[18]));
+                allSV+=parseInt(s[18]);
                 player.set('speed', parseInt(s[19]));
+                allSV+=parseInt(s[19]);
                 player.set('stamina', parseInt(s[20]));
+                allSV+=parseInt(s[20]);
                 player.set('reflexes', parseInt(s[21]));
+                allSV+=parseInt(s[21]);
                 player.set('handling', parseInt(s[22]));
+                allSV+=parseInt(s[22]);
                 player.set('disqualification', parseInt(s[23]));
                 player.set('rest', parseInt(s[24]));
                 player.set('teamwork', parseInt(s[25]));
                 player.set('games', parseInt(s[26]));
                 player.set('goalsTotal', parseInt(s[27]));
+                scorred +=parseInt(s[27]);
+
                 player.set('goalsMissed', parseInt(s[28]));
+                missed +=parseInt(s[28]);
                 player.set('goalsChamp', parseInt(s[29]));
+                scorredInChamp +=parseInt(s[29]);
                 player.set('mark', parseInt(s[30]));
                 player.set('gamesCareer', parseInt(s[31]));
                 player.set('goalsCareer', parseInt(s[32]));
                 player.set('yellowCards', parseInt(s[33]));
+                yelows +=parseInt(s[33]);
                 player.set('redCards', parseInt(s[34]));
+                reds +=parseInt(s[34]);
                 player.set('transfer', parseInt(s[35]));
                 player.set('lease', parseInt([36]));
                 player.set('birthplace', s[37]);
 
 
-                if(s[38].match(new RegExp(/(\d{1,2})/))) {
+                if (s[38].match(new RegExp(/(\d{1,2})/))) {
                     player.set('birthdate', parseInt(s[38].match(new RegExp(/(\d{1,2})/))[1]));
 
                 }
 
-                if(s[38].match(new RegExp(/\((\d{1,2})\)/))) {
+                if (s[38].match(new RegExp(/\((\d{1,2})\)/))) {
 
                     player.set('birthtour', parseInt(s[38].match(new RegExp(/\((\d{1,2})\)/))[1]));
                 }
 
-                    //player.set('birthtour', f[0].substr(0, f[0].length - 1));
+                //player.set('birthtour', f[0].substr(0, f[0].length - 1));
 
 
                 player.set('assists', parseInt(s[39]));
@@ -584,19 +650,86 @@ function parseAll(allText, calendarEntry) {
                 player.set('playerId', s[41]);
                 player.set('club', club);
                 players.push(player);
-
+                allPlayers +=1;
                 i++;
             }
+
+
+
+            club.set("allStrength", allStrength);
+            club.set("allTallant", allTallant);
+            club.set("allPrice", allPrice);
+            club.set("allSalary", allSalary);
+            club.set("allPlayers", allPlayers);
+            club.set("allAge", allAge);
+            club.set("allSV", allSV);
+            club.set("allExp", allExp);
+            club.set("allFitness", allFitness);
+            club.set("allMorale", allMorale);
+            club.set("allHealth", allHealth);
+            club.set("yelows", yelows);
+            club.set("reds", reds);
+            club.set("scorred", scorred);
+            club.set("scorredInChamp", scorredInChamp);
+            club.set("missed", missed);
+
+            if(allPlayers >0) {
+                var avgStrength = allStrength/allPlayers;
+                club.set("avgStrength", avgStrength);
+                var avgTallant = allTallant/allPlayers;
+                club.set("avgTallant", avgTallant);
+                var avgPrice = allPrice/allPlayers;
+                club.set("avgPrice", avgPrice);
+                var avgSalary = allSalary/allPlayers;
+                club.set("avgSalary", avgSalary);
+                var avgAge = allAge/allPlayers;
+                club.set("avgAge", avgAge);
+                var avgSV = allSV/allPlayers;
+                club.set("avgSV", avgSV);
+                var avgExp = allExp/allPlayers;
+                club.set("avgExp", avgExp);
+                var avgFitness = allFitness/allPlayers;
+                club.set("avgFitness", avgFitness);
+                var avgMorale = allMorale/allPlayers;
+                club.set("avgMorale", avgMorale);
+                var avgHealth = allHealth/allPlayers;
+                club.set("avgHealth", avgHealth);
+
+            }
+
+
+
+
+            /*
+
+             32+ round(1.6 * [kgt intValue]) + 8*([self.club.goalkeepersCoach intValue] +[self.club.defendersCoach intValue]  +[self.club.midfieldersCoach intValue]  +[self.club.forwardsCoach intValue]  +[self.club.fitnessCoach intValue]  +[self.club.moraleCoach intValue]  +[self.club.doctorQualification intValue]  +[self.club.doctorPlayers intValue]) + 24*[self.club.scout intValue];
+
+             club.set("coach", parseInt(s[2]));
+             club.set("goalkeepersCoach", parseInt(s[3]));
+             club.set("defendersCoach", parseInt(s[4]));
+             club.set("midfieldersCoach", parseInt(s[5]));
+             club.set("forwardsCoach", parseInt(s[6]));
+             club.set("fitnessCoach", parseInt(s[7]));
+             club.set("moraleCoach", parseInt(s[8]));
+             club.set("doctorQualification", parseInt(s[9]));
+             club.set("doctorPlayers", parseInt(s[10]));
+             club.set("scout", parseInt(s[11]));
+            */
+
+            var coachSallary = 32 + (1.6 *coach) + 8*(goalkeepersCoach + defendersCoach + midfieldersCoach +forwardsCoach + fitnessCoach + moraleCoach + doctorQualification + doctorPlayers)+24*scout;
+            club.set("coachSallary", coachSallary);
+
+            clubs.push(club);
+
             i++;
             //return i;
             result["success"] = "success";
             return result;
-        } catch(error) {
+        } catch (error) {
             result["error"] = "Error on parsing clubs: " + error.code + " " + error.message;
             //return result;
             return result;
         }
-
 
 
     }
