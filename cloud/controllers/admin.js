@@ -8,6 +8,34 @@ exports.index = function(req, res) {
     });
 };
 
+exports.reOrderCalendar = function(req, res) {
+    var timetableQuery = new Parse.Query("Timetable");
+
+    timetableQuery.limit(1000);
+    timetableQuery.find({
+        success: function (entries) {
+            if(entries.length>0) {
+                var entry = entries[0];
+                res.send({
+                    "calendarEntryId": entry.id,
+                    "events":entry.get("event")
+                })
+            } else {
+                res.send({"errors": "No calendar entry found in date " + ondate})
+            }
+
+
+        },
+        error: function (error) {
+            console.log("Error on finding timetable: " + error.code + " " + error.message);
+            // res.send(error);
+            res.send({
+                errors: "Error on finding timetable: " + error.code + " " + error.message
+            });
+        }
+    });
+};
+
 exports.getCalendarEntryWithDate = function(req, res) {
 
     var ondate = req.body.ondate.split(".");
@@ -41,61 +69,61 @@ exports.getCalendarEntryWithDate = function(req, res) {
     });
 };
 
-exports.setEnvar = function(varName, varClass, varValue) {
-
-    var promise = new Parse.Promise();
-
-    var varQuery = new Parse.Query('Envar');
-    varQuery.equalTo('name', varName);
-    varQuery.equalTo('class', varClass);
-    varQuery.find({
-        success:function(envVars) {
-            if(envVars.length >1) {
-                promise.reject("More than one envVar was found");
-
-            } else if(envVars.length >0) {
-                var envVar = envVars[0];
-
-                envVar.save({
-                    value: varValue
-
-                }).then(function(env) {
-                    promise.resolve("Env var was saved");
-
-                }, function(error) {
-                    promise.reject("Error on saving envVar with name " + varName);
-
-                });
-
-            } else {
-                var envVar = new Parse.Object('Envar');
-
-                envVar.save({
-                    name:varName,
-                    class:varClass,
-                    value: varValue
-
-                }).then(function(env) {
-
-                    promise.resolve("Env var was created and saved");
-
-                }, function(error) {
-                    promise.reject("Error on creating envVar with name " + varName);
-
-                });
-            }
-        },
-        error:function(error) {
-
-            promise.reject("Error on finding envVar with name " + varName);
-
-        }
-    });
-
-
-    return promise;
-
-};
+//exports.setEnvar = function(varName, varClass, varValue) {
+//
+//    var promise = new Parse.Promise();
+//
+//    var varQuery = new Parse.Query('Envar');
+//    varQuery.equalTo('name', varName);
+//    varQuery.equalTo('class', varClass);
+//    varQuery.find({
+//        success:function(envVars) {
+//            if(envVars.length >1) {
+//                promise.reject("More than one envVar was found");
+//
+//            } else if(envVars.length >0) {
+//                var envVar = envVars[0];
+//
+//                envVar.save({
+//                    value: varValue
+//
+//                }).then(function(env) {
+//                    promise.resolve("Env var was saved");
+//
+//                }, function(error) {
+//                    promise.reject("Error on saving envVar with name " + varName);
+//
+//                });
+//
+//            } else {
+//                var envVar = new Parse.Object('Envar');
+//
+//                envVar.save({
+//                    name:varName,
+//                    class:varClass,
+//                    value: varValue
+//
+//                }).then(function(env) {
+//
+//                    promise.resolve("Env var was created and saved");
+//
+//                }, function(error) {
+//                    promise.reject("Error on creating envVar with name " + varName);
+//
+//                });
+//            }
+//        },
+//        error:function(error) {
+//
+//            promise.reject("Error on finding envVar with name " + varName);
+//
+//        }
+//    });
+//
+//
+//    return promise;
+//
+//};
 
 exports.uploadAllFile = function (req, res) {
     var parseAll = require('cloud/controllers/parseAll');
@@ -213,7 +241,7 @@ exports.updateTimetable = function (req, res) {
                             Parse.Object.destroyAll(oldEntries, {
                                 success: function (oldEntries) {
                                     //creating new timetable entries
-                                    console.log("old entries were removed")
+                                    console.log("old entries were removed");
                                     createNewEntry(res, from, to, season);
 
                                 },
@@ -354,7 +382,10 @@ function createNewEntry(res, dateFrom, dateTo, season) {
                 var timeEntry = timetableJS[o];
                 timeObject.set("date", timeEntry.date);
                 timeObject.set("event", timeEntry.events);
+
                 timeObject.set("shouldUpdateAll", timeEntry.shouldUpdateAll);
+                timeObject.set("shouldUpdateMatches", timeEntry.shouldUpdateMatches);
+
                 timeObject.set("season", season);
                 objectstoSave.push(timeObject);
             }
@@ -471,7 +502,10 @@ function getEvents(monthEntries, year, month, result, fromDate, toDate) {
     var tEvents = [];
 
     //var matchEvents = new RegExp('[^\(]*[\(][^\)]*[\)].*|изменение|банкротство|выкуп|золотые|постройки|обмены|Обмены|финальный|аукцион|Аренда');
-    var matchEvents = new RegExp('[\(].*?[\)]|изменение|банкротство|выкуп|золотые|постройки|обмены|Обмены|финальный|аукцион|Аренда');
+    var matchEvents = new RegExp('[\(].*?[\)]|изменение|банкротство|выкуп|золотые|постройки|обмены|Обмены|финальный|аукцион|Аренда|расписание');
+    var allEvents = new RegExp('[\(].*?[\)]|изменение|банкротство|выкуп|золотые|постройки|обмены|Обмены|финальный|аукцион|Аренда');
+    var sortEvents = new RegExp('расписание');
+
 
     for (var i = 0; i < monthEntries.length; i++) {
         var entry = monthEntries[i];
@@ -524,7 +558,18 @@ function getEvents(monthEntries, year, month, result, fromDate, toDate) {
                 }
 
                 if (eventArray.length > 0) {
-                    result.push({"date": eventDate, "events": eventArray, "shouldUpdateAll": true});
+                    var updAll = false;
+                    var updMatches = false;
+                    eventArray.forEach(function(cEvent) {
+                       if(cEvent.match(allEvents)) {
+                           updAll = true;
+                       }
+
+                        if(cEvent.match(sortEvents)) {
+                            updMatches = true;
+                        }
+                    });
+                    result.push({"date": eventDate, "events": eventArray, "shouldUpdateAll": updAll, "shouldUpdateMatches":updMatches});
                 }
 
                 //resultEv.push(eventArray);

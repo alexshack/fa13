@@ -7,8 +7,6 @@
         // always initialize all instance properties
         console.log('instance Envar created');
 
-        this.id = "some ID";
-
         this.init = function () {
 
         var env = this;
@@ -23,7 +21,8 @@
                         env[vars[i].get('name')] = {
                             "name": vars[i].get('name'),
                             "class": vars[i].get('class'),
-                            "value": vars[i].get('value')
+                            "value": vars[i].get('value'),
+                            "db":vars[i]
                         };
                     }
 
@@ -72,6 +71,51 @@
             return promise;
         };
 
+        this.changeObjectInEnvar = function (varClass, varName, varColumn, varValue) {
+            var env = this;
+            var promise = new Parse.Promise();
+
+            var obj = env[varName];
+            if (typeof  obj!="undefined") {
+                if (obj.class != varClass) {
+                    console.log("Несовпадение класса в " + varName + ". Ожидается " + obj.class + ", передано " + varClass);
+                    promise.reject("Несовпадение класса в " + varName + ". Ожидается " + obj.class + ", передано " + varClass);
+                    return promise;
+                }
+            } else {
+
+                    promise.reject("Переменной " + varName + " не существует");
+                    return promise;
+
+            }
+
+
+            this.getVarAsObject(varName).then(function (envObject) {
+                if (!envObject) {
+
+
+                        promise.reject("Значение переменной " + varName + " не ссылается на объект в БД");
+
+
+                }
+
+
+                envObject.set(varColumn, varValue);
+
+                envObject.save().then(function (env) {
+
+                    promise.resolve(env[varName]);
+
+                }, function (env, error) {
+                    promise.reject("Error on changing object linked in envVar with name " + varName);
+
+                });
+
+            });
+
+            return promise;
+        };
+
         this.setValueToVar = function (varClass, varName, varValue, createIfDoesNotExist) {
             var env = this;
             var promise = new Parse.Promise();
@@ -88,43 +132,30 @@
                     promise.reject("Переменной " + varName + " не существует");
                     return promise;
                 }
+
+                env[varName] = {};
+                obj = env[varName];
             }
 
+            obj.class = varClass;
+            obj.name = varName;
+            obj.value = varValue;
 
-            this.getVarAsObject(varName).then(function (envObject) {
-                if (!envObject) {
+            if(!obj.db) {
+                 obj.db = new Parse.Object('Envar');
+            }
 
-                    if (createIfDoesNotExist) {
-                        envObject = new Parse.Object('Envar');
-
-                    } else {
-                        promise.reject("Переменной " + varName + " не существует");
-                    }
-
-                }
-
-
-                envObject.save({
-                    name: varName,
-                    class: varClass,
-                    value: varValue
-
-                }).then(function (env) {
-
-                    env[varName] = {
-                        "name": varName,
-                        "class": varClass,
-                        "value": varValue
-                    };
-
-                    promise.resolve(env[varName]);
-
-                }, function (env, error) {
-                    promise.reject("Error on creating or changing envVar with name " + varName);
-
-                });
-
+            obj.db.save({
+                name: varName,
+                class: varClass,
+                value: varValue
+            }).then(function(db) {
+                obj.db = db;
+                promise.resolve(obj);
+            }, function(db, error) {
+                promise.reject("Error on creating or changing envVar with name " + varName);
             });
+
 
             return promise;
         };

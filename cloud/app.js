@@ -15,8 +15,9 @@ var admin = require('cloud/controllers/admin');
 var jobs = require('cloud/controllers/job_tasks');
 var parseAll = require('cloud/controllers/parseAll');
 var preloaders = require('cloud/controllers/preloaders');
+var turnirs = require('cloud/controllers/turnirs');
 var app = express();
- 
+
  
 app.set('views', 'cloud/views');
 app.set('view engine', 'ejs');  // Switch to Jade by replacing ejs with jade here.
@@ -38,6 +39,7 @@ app.locals._ = _;
 app.get('/admin/updatetimetable', admin.updateTimetable);
 app.post('/admin/getcalendarentry', admin.getCalendarEntryWithDate);
 
+app.get('/admin/updatematches', turnirs.updateMatches);
 app.get('/initturnirs', preloaders.initTurnirs);
 app.get('/initclubs', preloaders.initClubs);
 app.post('/admin/uploadallfile', admin.uploadAllFile);
