@@ -3,10 +3,9 @@ var moment = require('moment');
 var _ = require('underscore');
 
 
-    ejs = require('ejs'),
+var ejs = require('ejs');
 //parseExpressHttpsRedirect = require('parse-express-https-redirect'),
-    parseExpressCookieSession = require('parse-express-cookie-session'),
-    _ = require('underscore');
+var parseExpressCookieSession = require('parse-express-cookie-session');
  
 var playerController = require('cloud/controllers/player.js');
 var clubController = require('cloud/controllers/club.js');  

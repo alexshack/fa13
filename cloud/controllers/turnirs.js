@@ -17,11 +17,20 @@ exports.getTurnirs = function(turnirType) {
   return getTurnirs(turnirType);
 };
 
+function splitArray(arr, n) {
+    var res = [];
+    while (arr.length) {
+        res.push(arr.splice(0, n));
+    }
+    return res;
+}
+
 function getTurnirs(turnirType) {
     var promise = new Parse.Promise();
 
     var tQuery = new Parse.Query("Turnir");
 
+    tQuery.limit(1000);
 
     switch (turnirType) {
         case 0: //WC
@@ -66,11 +75,14 @@ function getTurnirs(turnirType) {
     }
 
     tQuery.find().then(function(turnirs) {
-        getMatches(turnirs).then(function(result) {
-            promise.resolve(result);
-        }, function(error) {
-            promise.reject(error);
-        });
+        //getMatchesRecursive(turnirs, 0).then(function(result) {
+            getMatchesRecursive(turnirs, 0).then(function(result) {
+                promise.resolve(result);
+            },
+            function(error) {
+                promise.reject(error);
+            })
+
     }, function(turnirs, error) {
         promise.reject("Error on finfding turnirs");
     });
@@ -78,6 +90,44 @@ function getTurnirs(turnirType) {
 
     return promise;
 }
+
+function getMatchesRecursive(turnirs, i) {
+
+    var promise = new Parse.Promise();
+
+    var tParts = splitArray(turnirs, 10);
+    console.log(tParts[i]);
+
+
+
+    getMatches(tParts[i]).then(function(result) {
+        i++;
+        if(i<tParts.length) {
+            promise.resolve(getMathchesRecursive(turnirs, i));
+        } else {
+            promise.resolve(result);
+        }
+
+    }, function(error) {
+        promise.reject(error);
+    });
+
+    return promise;
+
+}
+
+//function delay(turnirs, i) {
+//
+//    var promise = new Parse.Promise();
+//    $timeout(function() {
+//        getMathchesRecursive(turnirs, i).then(function(result) {
+//            promise.resolve();
+//        });
+//
+//    }, 5000);
+//
+//    return promise;
+//}
 
 function getMatches(turnirs) {
     var promise = new Parse.Promise();
@@ -90,7 +140,14 @@ function getMatches(turnirs) {
 
     var calMap = {};
 
-    Parse.Config.get().then(function (config) {
+    var t = 0;
+    var tIds = [];
+
+    var link = "";
+
+
+
+        Parse.Config.get().then(function (config) {
 
         fa13DomenUrl = config.get("fa13url");
         console.log("config = " + fa13DomenUrl);
@@ -100,23 +157,26 @@ function getMatches(turnirs) {
         }
         turnirs.forEach(function (turnir) {
             links.push([turnir, fa13DomenUrl + turnir.get("sok")]);
-            console.log(fa13DomenUrl + turnir.get("sok"));
+            tIds.push(turnir.get("sok"));
+           // console.log(fa13DomenUrl + turnir.get("sok"));
         });
 
-        var t = 0;
+
 
         if (links.length > 0) {
 
             var calQuery = new Parse.Query("Timetable");
 
             calQuery.ascending("date");
+            calQuery.limit(1000);
             calQuery.find().then(function (calEntries) {
 
                 calEntries.forEach(function (entry) {
                     calMap[entry.get("date")] = entry;
                 });
 
-                getmatchesFromFa13Server(links[t]);
+                link = links[t];
+                getmatchesFromFa13Server();
 
             }, function (calEntries, error) {
                 promise.reject(error);
@@ -131,14 +191,17 @@ function getMatches(turnirs) {
     });
 
 
-    function getmatchesFromFa13Server(link) {
+    function getmatchesFromFa13Server() {
+        console.log("getmatchesFromFa13Server");
         Parse.Cloud.httpRequest({
             url: link[1],
             headers: {
                 'Content-Type': 'application/json'
             },
             success: function (httpResponse) {
-                var cTurnirs = JSON.parse(httpResponse);
+                var cTurnirs = JSON.parse(httpResponse.text);
+                console.log("success");
+               // var cTurnirs = httpResponse;
                 if (cTurnirs.status == 0) {
                     var cMatches = cTurnirs.data;
 
@@ -155,19 +218,30 @@ function getMatches(turnirs) {
 
                     t++;
                     if (t < links.length) {
-                        getmatchesFromFa13Server(links[t]);
+                        link = links[t];
+
+                        getmatchesFromFa13Server();
+
                     } else {
                         savematchesToParse();
                     }
 
                 } else {
-                    promise.reject("fa13 server api error");
+                    promise.reject("fa13 server api error " + JSON.stringify(httpResponse.text));
                 }
 
             },
             error: function (error) {
+                console.log("ERROR GETTING: " + link[1]);
+                //t++;
+                //if (t < links.length) {
+                //    getmatchesFromFa13Server(links[t]);
+                //} else {
+                //    savematchesToParse();
+                //}
 
-                promise.reject(error);
+
+                promise.reject("ERROR GETTING: " + link[1]);
 
             }
         });
@@ -175,23 +249,33 @@ function getMatches(turnirs) {
 
     function savematchesToParse() {
         var matchQyery = new Parse.Query('Match');
+        console.log(tIds);
+        matchQyery.containedIn("objectId", tIds);
         matchQyery.find().then(function (parseMathches) {
+            console.log("WE ARE HERE");
             var matchesMap = {};
             var matchesToSave = [];
-            parseMathches.forEach(function (entry) {
-                matchesMap[entry.get("matchId")] = entry;
-            });
+            if(parseMathches.length>0) {
+                parseMathches.forEach(function (entry) {
+                    matchesMap[entry.get("matchId")] = entry;
+                });
+            }
 
+            console.log(matches.length);
             matches.forEach(function (match) {
+
                 var pMatch = matchesMap[match.id];
+                console.log(pMatch);
                 if (!pMatch) {
                     pMatch = new Parse.Object('Match');
                 }
-
+                console.log(pMatch);
                 pMatch = setmatchProperties(pMatch, match);
                 matchesToSave.push(pMatch);
 
             });
+
+            console.log("matchesToSave count = ", matchesToSave.length);
 
 
             Parse.Object.saveAll(matchesToSave, {
@@ -221,10 +305,13 @@ function getMatches(turnirs) {
     }
 
     function setmatchProperties(pMatch, fMatch) {
+
+
+
         var properties = [
             "realdata",
             "tournament",
-            "tournamentId",
+            "tournsok",
             "round",
             "teamowner",
             "teamguest",
@@ -248,8 +335,13 @@ function getMatches(turnirs) {
             "poledoma",
             "penitog",
             "basetime",
-            "tournamentParse"];
+            "tournamentParse",
+            "press_url",
+            "report_url",
+            "video_url"];
 
+        console.log(properties);
+        console.log(pMatch);
         pMatch.set("matchId", fMatch.id);
         properties.forEach(function (property) {
             pMatch.set(property, fMatch[property]);
@@ -262,11 +354,13 @@ function getMatches(turnirs) {
             pMatch.set("calendarEntry", cEntry);
         }
 
+        console.log("PR: " + fMatch);
+
         return pMatch;
     }
 
-
     return promise;
+
 }
 
 exports.getMatches = function (turnirs) {

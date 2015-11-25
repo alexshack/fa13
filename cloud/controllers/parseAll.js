@@ -96,6 +96,7 @@ exports.parseAllFileOnRequest = function (calendarEntry, fileData64) {
     } else {
         Parse.Cloud.httpRequest({
             url: 'http://www.fa13.info/build/all13Ho.zip',
+            method:'get',
             headers: {
                 'Content-Type': 'application/zip;charset=utf-8'
             },
@@ -111,6 +112,7 @@ exports.parseAllFileOnRequest = function (calendarEntry, fileData64) {
             }
         });
     }
+
 
     function unpackAndResume(array) {
         var result = {};
