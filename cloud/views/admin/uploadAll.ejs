@@ -30,8 +30,8 @@
                 <!-- /.input group -->
             </div>
 
-            <div class="form-group" id="hidden_area" style="display:none">
-                <p class="form-control" id="event"></p>
+            <div class="form-group" id="hidden_area" class="alert" style="display:none">
+                <div id="event" class="small-box bg-green"></div>
                 <input type="file" id="form-file" accept=".zip">
 
                 <p class="help-block">Выберите all*.zip</p>
@@ -95,7 +95,7 @@
 
 
     function hideSpinner(divId) {
-       // $("#"+divId).removeClass("jumbotron-overlay-down");
+
         var div = $("#"+divId+"Spinner");
         if(div.length) {
             div.css('z-index', -5000)
@@ -103,15 +103,7 @@
         }
     }
 
-    //    $('#date').datepicker({
-    //        format: "dd.mm.yyyy",
-    //        autoclose: true
-    //    });
-    //
-    //var datepicker = $.fn.datepicker.noConflict(); // return $.fn.datepicker to previously assigned value
-    //$.fn.bootstrapDP = datepicker;
 
-   // $("#uploadAllBody").overlayout("uploadAllBody");
 
     var b64;
     var calendarEntryId;
@@ -129,7 +121,7 @@
                 url: '/admin/getcalendarentry',
                 type: 'POST',
                 data: {
-                    "ondate": $("#date").val()
+                    "ondate": moment($("#date").val(), "DD.MM.YYYY").format("YYYY-MM-DD")
                 }
 
             }).done(function (response) {
@@ -145,7 +137,12 @@
 
                 } else {
                     calendarEntryId = response.calendarEntryId;
-                    $('#event').html(response.events);
+                    if(typeof  response.events!="undefined" && response.events.length>0) {
+                        var event =  response.events.join("<br/>");
+                        $('#event').html(event);
+                    }
+
+
 //                $('#hidden_area').attr("style", "display:block;");
 //                $('#date_submit').attr("style", "display:block;");
 

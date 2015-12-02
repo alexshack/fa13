@@ -39,7 +39,7 @@ exports.removeAllForCalendarEntry = function (calendarEntry) {
     function dropObjectWithClass(className) {
         var query = new Parse.Query(className);
 
-        query.equalTo("calendarEntry", calendarEntry);
+        query.equalTo("calendar", calendarEntry);
         query.limit(1000);
         query.find({
             success: function (objects) {
@@ -107,7 +107,7 @@ exports.parseAllFileOnRequest = function (calendarEntry, fileData64) {
             },
             error: function (error) {
 
-                promise.reject(error);
+                promise.reject(error.message);
 
             }
         });
@@ -258,7 +258,7 @@ function parseAll(allText, calendarEntry) {
 
 
                                     },
-                                    error: function (players, error) {
+                                    error: function (error) {
 
                                         //status.error("Error on saving players: " + error.code + " " + error.message)
 
@@ -270,7 +270,7 @@ function parseAll(allText, calendarEntry) {
                                 });
 
                             },
-                            error: function (clubs, error) {
+                            error: function (error) {
 
 
                                 //status.error("Error on saving clubs: " + error.code + " " + error.message)
@@ -284,7 +284,7 @@ function parseAll(allText, calendarEntry) {
                         });
 
                     },
-                    error: function (managers, error) {
+                    error: function (error) {
 
 
                         //status.error("Error on saving managers: " + error.code + " " + error.message)
@@ -354,7 +354,7 @@ function parseAll(allText, calendarEntry) {
 
             var club = new Parse.Object("Club");
             var s1 = arr[i].split('/');
-            club.set("calendarEntry", calendarEntry);
+            club.set("calendar", calendarEntry);
             club.set("date", date);
             club.set("name", s1[0]);
             club.set("clubId", s1[1]);
@@ -391,7 +391,7 @@ function parseAll(allText, calendarEntry) {
                 manager.set("email", s2[4]);
                 manager.set("icq", s2[5]);
                 manager.set("matches", parseInt(s2[6]));
-                manager.set("calendarEntry", calendarEntry);
+                manager.set("calendar", calendarEntry);
             }
 
             i++;
@@ -513,7 +513,7 @@ function parseAll(allText, calendarEntry) {
             while (arr[i] != '999') {
                 var s = arr[i].split('/');
                 var player = new Player();
-                player.set("calendarEntry", calendarEntry);
+                player.set("calendar", calendarEntry);
                 player.set("date", date);
                 player.set('clubName', club.get('name'));
                 player.set('number', parseInt(s[0]));

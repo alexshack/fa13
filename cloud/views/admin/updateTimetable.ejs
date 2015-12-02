@@ -61,12 +61,13 @@
 
     function updateTimeTable() {
 
+
         $.ajax({
             url: '/admin/updatetimetable',
             type: 'GET',
             data: {
-                "from": $("#from").val(),
-                "to": $("#to").val()
+                "from": moment($("#from").val(), "DD.MM.YYYY").format("YYYY-MM-DD"),
+                "to": moment($("#to").val(), "DD.MM.YYYY").format("YYYY-MM-DD")
             }
 
         }).done(function (response) {

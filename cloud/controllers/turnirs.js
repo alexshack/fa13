@@ -165,7 +165,7 @@ function getMatches(turnirs) {
 
         if (links.length > 0) {
 
-            var calQuery = new Parse.Query("Timetable");
+            var calQuery = new Parse.Query("Calendar");
 
             calQuery.ascending("date");
             calQuery.limit(1000);

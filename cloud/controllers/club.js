@@ -11,7 +11,7 @@ exports.show = function(req, res) {
   var aDate = new Date();
   clubQuery.equalTo("clubId", req.params.clubId);
   clubQuery.descending("date");
-  clubQuery.include("calendarEntry");
+  clubQuery.include("calendar");
   clubQuery.include("flag");
   clubQuery.include("manager");
   clubQuery.include("manager.flag");

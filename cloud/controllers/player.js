@@ -25,7 +25,7 @@ exports.show = function (req, res) {
     playerQuery.equalTo("playerId", req.params.playerId);
     playerQuery.descending("date");
     playerQuery.include("nationalityCode");
-    playerQuery.include("calendarEntry");
+    playerQuery.include("calendar");
     playerQuery.include("club");
 
 

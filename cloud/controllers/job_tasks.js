@@ -13,7 +13,7 @@ Parse.Cloud.job("parseAllFile", function(request, status) {
     var strDate = (new Date().getMonth()+1) + " " +  new Date().getDate() + " " +  new Date().getFullYear() + " 00:00:00 GMT+0300";
     var mskDate = new Date(strDate);
 
-    var timetableQuery = new Parse.Query("Timetable");
+    var timetableQuery = new Parse.Query("Calendar");
     timetableQuery.equalTo("date", mskDate);
 
 
@@ -40,7 +40,7 @@ Parse.Cloud.job("parseAllFile", function(request, status) {
 
             envar.init().then(function(result) {
 
-                envar.setValueToVar('Timetable', 'currentCalendarEntry', calendarEntry.id, true).then(function (result) {
+                envar.setValueToVar('Calendar', 'currentCalendarEntry', calendarEntry.id, true).then(function (result) {
 
                     console.log(result + " was saved");
                    // console.log(result);
@@ -58,30 +58,48 @@ Parse.Cloud.job("parseAllFile", function(request, status) {
 
 
             function getParse() {
-                parseAll.removeAllForCalendarEntry(calendarEntry).then(function(result) {
+                //groupedEvents[event.virtual_date]["shouldUpdateAll"] = false;
+                //groupedEvents[event.virtual_date]["shouldUpdateTransList"] = false;
+                //groupedEvents[event.virtual_date]["shouldUpdateTurnirs"] = false;
+                //
 
-                    parseAll.parseAllFileOnRequest(calendarEntry, null).then(function(result) {
-                        console.log(result);
-                        status.success(result);
-                    }, function(error) {
-                        console.log(error);
-                        status.error(error);
-                    })
+                updateAll(calendarEntry).then(function(result) {
+                    status.success(result);
                 }, function(error) {
                     status.error(error);
                 });
+
             }
-            //
-            //
-            //adminClass.setEnvar('currentCalendarEntry', 'Timetable', calendarEntry.id).then(function(result) {
-            //    //даже если не удастся сохранить переменную, мы все равно продолжнаем работу, но в лог записать надо
-            //
-            //});
         },
 
-        error: function (object, error) {
+        error: function (error) {
             console.log("Error on getting calendar entry with id: " + calId + ". Error: " + error.code + " " + error.message);
             status.error("Error on getting calendar entry with id: " + calId + ". Error: " + error.code + " " + error.message);
         }
     });
 });
+
+function updateAll(calendarEntry) {
+
+    var promise = new Parse.Promise();
+
+    if(calendarEntry.get("shouldUpdateAll") == true) {
+    parseAll.removeAllForCalendarEntry(calendarEntry).then(function(result) {
+
+        parseAll.parseAllFileOnRequest(calendarEntry, null).then(function(result) {
+            console.log(result);
+            promise.resolve(result);
+        }, function(error) {
+            console.log(error);
+            promise.reject(error);
+        })
+    }, function(error) {
+        promise.reject(error);
+    });
+
+    } else {
+        promise.resolve("There were no changes in All file");
+    }
+
+    return promise;
+}

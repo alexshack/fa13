@@ -40,7 +40,7 @@ exports.initClubs = function(req, res) {
             //а тут получаем запись календаря в виде объекта календаря
             envar.getVarAsObject("currentCalendarEntry").then(function(calendarEntry) {
                 clubQuery.limit(2000);
-                clubQuery.equalTo('calendarEntry', calendarEntry);
+                clubQuery.equalTo('calendar', calendarEntry);
                 clubQuery.find({
                     success:function(clubs) {
                         return  res.send({clubs:clubs})
