@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<% include _header.ejs %>
+
+<body class="hold-transition skin-blue-light sidebar-mini">
+<div class="wrapper">
+
+
+ <%if(typeof page != "undefined") {%>
+    
+    <%if(page == "showClub") {%>
+    <% include club/show.ejs%>
+    <%} else if(page == "showPlayer") {%>
+    <% include player/show.ejs%>
+    <%} else if(page == "allPlayers") {%>
+    <% include player/index.ejs%>
+    <%} else if(page == "updatePage") {%>
+    <% include admin/updatePage.ejs%>
+    <%} else if(page == "mainPage") {%>
+    <% include main.ejs%>
+    <%}%>
+
+<%} else {%>
+    <!-- тут надо вставить страницу 404-->
+    <h1>Страница не найдена</h1>
+<%}%>
+
+
+
+<% include _footer.ejs %>
+
+
+</div><!-- ./wrapper -->
+</body>
+</html>

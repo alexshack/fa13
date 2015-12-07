@@ -7,8 +7,10 @@ exports.index = function (req, res) {
     query.descending('name');
     query.limit(1000);
     query.find().then(function (results) {
-            res.render('player/index', {
-                players: results
+            res.render('index', {
+                players: results,
+                title:"Все игроки",
+                page:"allPlayers"
             });
         },
         function () {
@@ -50,28 +52,34 @@ exports.show = function (req, res) {
 
             playerObmen.find().then(function (playersObmen) {
 
-                res.render('player/show', {
+                res.render('index', {
                     aPlayer: allPlayer,
                     pPlayer: prevPlayer,
                     player: currPlayer,
-                    playersObmen: playersObmen
+                    playersObmen: playersObmen,
+                    title:currPlayer.get("name"),
+                    page:"showPlayer"
                 });
             },
                 function (error) {
 
-                    res.render('player/show', {
+                    res.render('index', {
                         aPlayer: allPlayer,
                         pPlayer: prevPlayer,
                         player: currPlayer,
-                        error:error
+                        title:currPlayer.get("name"),
+                        error:error,
+                        page:"showPlayer"
                     });
                 });
         } else {
 
-            res.render('player/show', {
+            res.render('index', {
                 aPlayer: allPlayer,
                 pPlayer: prevPlayer,
-                player: currPlayer
+                player: currPlayer,
+                title:currPlayer.get("name"),
+                page:"showPlayer"
             });
         }
     });

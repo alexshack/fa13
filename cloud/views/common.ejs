@@ -15,13 +15,13 @@ if(typeof(Storage) !== "undefined") {
     if (sessionStorage.turnirs) {
         turnirs = JSON.parse(sessionStorage.turnirs);
         //запускаем функцию, которая инициализирет объекты, которые используют турниры, например выбор турниров в меню
-        console.log("from session");
-        console.log(turnirs);
+       // console.log("from session");
+       // console.log(turnirs);
        // $("#turnirs").html(JSON.stringify(turnirs));
 
     } else {
 
-        console.log("from server");
+        //console.log("from server");
         getTurnirsFromServer();
     }
 
@@ -29,12 +29,12 @@ if(typeof(Storage) !== "undefined") {
     if (sessionStorage.clubs) {
         clubs = JSON.parse(sessionStorage.clubs);
         //запускаем функцию, которая инициализирет объекты, которые используют клубы, например выбор клуба в меню
-        console.log("from session");
-        console.log(clubs);
+      //  console.log("from session");
+       // console.log(clubs);
        // $("#clubs").html(JSON.stringify(clubs));
     } else {
 
-        console.log("from server");
+       // console.log("from server");
         getClubsFromServer();
 
     }
@@ -55,11 +55,11 @@ function getTurnirsFromServer() {
             if(typeof(Storage) !== "undefined") {
                 sessionStorage.turnirs = JSON.stringify(turnirs);
             }
-            console.log(turnirs);
+           // console.log(turnirs);
             //$("#turnirs").html(JSON.stringify(turnirs));
             //запускаем функцию, которая инициализирет объекты, которые используют турниры, например выбор турниров в меню
         } else {
-            console.log(response);
+            //console.log(response);
 
             //$("#turnirs").html(JSON.stringify(response));
             //запускаем функцию, которая инициализирет объекты, которые используют турниры, например выбор турниров в меню
@@ -79,13 +79,13 @@ function getClubsFromServer() {
             if(typeof(Storage) !== "undefined") {
                 sessionStorage.clubs = JSON.stringify(clubs);
             }
-            console.log(clubs);
+          //  console.log(clubs);
             //запускаем функцию, которая инициализирет объекты, которые используют клубы, например выбор клуба в меню
 
            // $("#clubs").html(JSON.stringify(clubs));
 
         } else {
-            console.log(response);
+           // console.log(response);
 
            // $("#clubs").html(JSON.stringify(response));
         }

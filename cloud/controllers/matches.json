@@ -1,3 +1,6 @@
+//http://www.fa13.info/index.api.php?action=financeLog&date=2015-10-18
+        //финансы всех команд на дату
+
 {
   "status": 0,
   "data": [

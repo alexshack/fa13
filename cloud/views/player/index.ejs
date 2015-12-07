@@ -1,55 +1,47 @@
-<!-- Include the header partial -->
-<% include ../_header %>
-
 <!-- content -->
 <div id="page_content">
-	<div id="page_content_inner">
+    <div id="page_content_inner">
 
-	<h1 class="heading_b uk-margin-bottom">Игроки</h1>
-	<div class="md-card uk-margin-medium-bottom">
-        <div class="md-card-content">
-                    <table id="dt_default" class="uk-table" cellspacing="0" width="100%">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Position</th>
-                                <th>Office</th>
-                                <th>Age</th>
-                                <th>Start date</th>
-                                <th>Salary</th>
-                            </tr>
-                        </thead>
-                        <tfoot>
-                        <tr>
-                            <th>Name</th>
-                            <th>Position</th>
-                            <th>Office</th>
-                            <th>Age</th>
-                            <th>Start date</th>
-                            <th>Salary</th>
-                        </tr>
-                        </tfoot>
+        <h1 class="heading_b uk-margin-bottom">Игроки</h1>
 
-                        <tbody>
-							<% players.forEach(function(player) { %>
-								<tr>
-                           			<td><%= player.get("name") %></td>
-                            		<td><%= player.get("clubName") %></td>
-                           		 	<td><img class="flag flag-nl" /> <%= player.get("nationality") %></td>
-                            		<td><%= player.get("age") %></td>
-                            		<td><%= player.get("position") %></td>
-                            		<td><%= player.get("price") %></td>
-								</tr>
-							<% }) %>
-						</tbody>
-                    </table>
-                </div>
+        <div class="md-card uk-margin-medium-bottom">
+            <div class="md-card-content">
+                <table id="dt_default" class="uk-table" cellspacing="0" width="100%">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Position</th>
+                        <th>Office</th>
+                        <th>Age</th>
+                        <th>Start date</th>
+                        <th>Salary</th>
+                    </tr>
+                    </thead>
+                    <tfoot>
+                    <tr>
+                        <th>Name</th>
+                        <th>Position</th>
+                        <th>Office</th>
+                        <th>Age</th>
+                        <th>Start date</th>
+                        <th>Salary</th>
+                    </tr>
+                    </tfoot>
+
+                    <tbody>
+                    <% players.forEach(function(player) { %>
+                    <tr>
+                        <td><%= player.get("name") %></td>
+                        <td><%= player.get("clubName") %></td>
+                        <td><img class="flag flag-nl"/> <%= player.get("nationality") %></td>
+                        <td><%= player.get("age") %></td>
+                        <td><%= player.get("position") %></td>
+                        <td><%= player.get("price") %></td>
+                    </tr>
+                    <% }) %>
+                    </tbody>
+                </table>
             </div>
-
-
- 
+        </div>
     </div>
 </div>
-
-<!-- Include the footer partial -->
-<% include ../_footer %>

@@ -5,6 +5,7 @@
 var parseAll = require('cloud/controllers/parseAll');
 var adminClass = require('cloud/controllers/admin');
 var envarlib = require('cloud/controllers/Envar');
+var turnirs =  require('cloud/controllers/turnirs');
 
 Parse.Cloud.job("parseAllFile", function(request, status) {
 
@@ -64,7 +65,11 @@ Parse.Cloud.job("parseAllFile", function(request, status) {
                 //
 
                 updateAll(calendarEntry).then(function(result) {
-                    status.success(result);
+                    updateMatches(calendarEntry).then(function(result) {
+                        status.success(result);
+                    }, function(error) {
+                        status.error(error);
+                    });
                 }, function(error) {
                     status.error(error);
                 });
@@ -103,3 +108,23 @@ function updateAll(calendarEntry) {
 
     return promise;
 }
+
+
+function updateMatches(calendarEntry) {
+
+    var promise = new Parse.Promise();
+
+    if(calendarEntry.get("shouldUpdateAll") == true) {
+        turnirs.updateMatchesOnDate(calendarEntry).then(function(result) {
+            promise.resolve(result);
+        }, function(error) {
+            promise.reject(error);
+        })
+    } else {
+        promise.resolve("There is no needs in matches update");
+    }
+
+    return promise;
+}
+
+

@@ -1,0 +1,28 @@
+<%if(typeof eventsData!= "undefined") {%>
+<div id='calendar'></div>
+
+<script>
+    var events = <%-JSON.stringify(eventsData)%>;
+
+    $(function() { // document ready
+
+        $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month'//,agendaWeek,agendaDay'
+            },
+            defaultDate: moment().format("YYYY-MM-DD"),
+            lang:"ru",
+            editable: false,
+            eventLimit: true, // allow "more" link when too many events
+            events:events
+        });
+
+    });
+</script>
+<%} else {%>
+    <%if(typeof error!= "undefined") {%>
+        console.log("<%=error.message%>");
+    <%}%>
+<%}%>

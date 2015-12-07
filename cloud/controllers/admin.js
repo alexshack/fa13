@@ -3,13 +3,11 @@
  */
 
 exports.index = function(req, res) {
-    res.render('admin/updatePage', {
-
+    res.render('index', {
+         title:"Админка",
+        page:"updatePage"
     });
 };
-
-
-
 
 
 
@@ -26,8 +24,6 @@ exports.uploadAllFile = function (req, res) {
                     "result":"error",
                     "message": "Не выбрана запись календаря, или не выбран файл импорта!"
                 });
-
-
 
     }
 

@@ -13,6 +13,7 @@ var pageGenerator = require('cloud/controllers/pageGenerator');
 var admin = require('cloud/controllers/admin');
 var calendar = require('cloud/controllers/calendar');
 var jobs = require('cloud/controllers/job_tasks');
+var manualJob = require('cloud/controllers/manualJob');
 var parseAll = require('cloud/controllers/parseAll');
 var preloaders = require('cloud/controllers/preloaders');
 var turnirs = require('cloud/controllers/turnirs');
@@ -39,7 +40,7 @@ app.locals._ = _;
 app.get('/admin/updatetimetable', calendar.createCalendar);
 app.post('/admin/getcalendarentry', calendar.getCalendarEntryWithDate);
 
-app.get('/admin/updatematches', turnirs.updateMatches);
+app.get('/admin/updatematches', turnirs.updateMatchesOnDateRequest);
 app.get('/initturnirs', preloaders.initTurnirs);
 app.get('/initclubs', preloaders.initClubs);
 app.post('/admin/uploadallfile', admin.uploadAllFile);
@@ -48,6 +49,7 @@ app.get('/player', playerController.index);
 app.get('/player/:playerId', playerController.show);
 app.get('/club/:clubId', clubController.show);
 app.get('/admin', admin.index);
+app.get('/calendar', calendar.renderCalendarData);
 //app.get('/admin/calendar', calendar.createCalendar);
 //app.get('/admin/migratecalendar', calendar.migrateCalendar);
 

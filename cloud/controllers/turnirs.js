@@ -2,311 +2,289 @@
  * Created by sandr on 16.10.15.
  */
 
-exports.updateMatches = function(req, res) {
-    console.log(req.query.turnirType);
-    var turnirType = parseInt(req.query.turnirType);
-    getTurnirs(turnirType).then(function(result) {
-        res.send(result);
-    }, function(error) {
-        res.send(error);
-    });
-};
+var moment = require('cloud/lib/moment-timezone-with-data');
+moment.tz.setDefault('Europe/Moscow');
 
-
-exports.getTurnirs = function(turnirType) {
-  return getTurnirs(turnirType);
-};
-
-function splitArray(arr, n) {
-    var res = [];
-    while (arr.length) {
-        res.push(arr.splice(0, n));
-    }
-    return res;
-}
-
-function getTurnirs(turnirType) {
+function getTurnirs() {
     var promise = new Parse.Promise();
 
     var tQuery = new Parse.Query("Turnir");
 
     tQuery.limit(1000);
+    tQuery.find().then(function (turnirs) {
+        if (turnirs.length > 0) {
+            var sortedTurnirs = {};
 
-    switch (turnirType) {
-        case 0: //WC
-            tQuery.contains("turnir", "ОЧМ");
+            turnirs.forEach(function (turnir) {
+                sortedTurnirs[turnir.get("sok")] = turnir;
+            });
 
-            break;
+            promise.resolve(sortedTurnirs);
 
-        case 1: //championships
-            tQuery.contains("turnir", "чемпионат");
-
-            break;
-
-        case 2: //intercups
-
-            var qCM1 = new Parse.Query("Turnir").contains("turnir", "ЛЧ");
-            var qCM2 = new Parse.Query("Turnir").contains("turnir", "КА");
-            var qCM3 = new Parse.Query("Turnir").contains("turnir", "КФ");
-            var qCM4 = new Parse.Query("Turnir").contains("turnir", "Федераций");
-            var qCM5 = new Parse.Query("Turnir").contains("turnir", "Ассоциации");
-            var qCM6 = new Parse.Query("Turnir").contains("turnir", "Чемпионов");
-
-            tQuery.or(qCM1, qCM2, qCM3, qCM4, qCM5, qCM6);
-
-            break;
-
-        case 3: //national cups
-            tQuery.contains("turnir", "кубок");
-
-            break;
-
-        case 4: //frendly
-            tQuery.equalTo("sok", "rfg");
-
-            break;
-
-        case 5: //allTurnirs
-
-            break;
-
-        default:
-            promise.reject("Unknown type of turnirs sent");
-    }
-
-    tQuery.find().then(function(turnirs) {
-        //getMatchesRecursive(turnirs, 0).then(function(result) {
-            getMatchesRecursive(turnirs, 0).then(function(result) {
-                promise.resolve(result);
-            },
-            function(error) {
-                promise.reject(error);
-            })
-
-    }, function(turnirs, error) {
-        promise.reject("Error on finfding turnirs");
+        } else {
+            promise.resolve({});
+        }
+    }, function (turnirs, error) {
+        promise.reject(error);
     });
 
 
     return promise;
 }
 
-function getMatchesRecursive(turnirs, i) {
-
+function getClubsForCalendarEntry(calendarEntry) {
     var promise = new Parse.Promise();
 
-    var tParts = splitArray(turnirs, 10);
-    console.log(tParts[i]);
+    var tQuery = new Parse.Query("Club");
+    tQuery.equalTo("calendar", calendarEntry);
+    tQuery.limit(1000);
+    tQuery.find().then(function (clubs) {
+        if (clubs.length > 0) {
+            var sortedClubs = {};
 
+            clubs.forEach(function (club) {
+                sortedClubs[club.get("clubId")] = club;
+            });
 
+            promise.resolve(sortedClubs);
 
-    getMatches(tParts[i]).then(function(result) {
-        i++;
-        if(i<tParts.length) {
-            promise.resolve(getMathchesRecursive(turnirs, i));
         } else {
-            promise.resolve(result);
+            promise.resolve({});
         }
+    }, function (error) {
+        promise.reject(error);
+    });
 
+
+    return promise;
+}
+
+
+
+exports.updateMatchesOnDate = function (calendarEntry) {
+    var promise = new Parse.Promise();
+    updateMatchesInDate(calendarEntry).then(function(result) {
+        promise.resolve(result);
     }, function(error) {
         promise.reject(error);
     });
 
     return promise;
 
-}
+};
 
-//function delay(turnirs, i) {
-//
-//    var promise = new Parse.Promise();
-//    $timeout(function() {
-//        getMathchesRecursive(turnirs, i).then(function(result) {
-//            promise.resolve();
-//        });
-//
-//    }, 5000);
-//
-//    return promise;
-//}
 
-function getMatches(turnirs) {
+function updateMatchesInDate(calendarEntry) {
     var promise = new Parse.Promise();
-    var links = [];
-
-
-    var matches = [];
-
-    var fa13DomenUrl = "";
-
-    var calMap = {};
-
-    var t = 0;
-    var tIds = [];
-
-    var link = "";
-
-
-
-        Parse.Config.get().then(function (config) {
-
-        fa13DomenUrl = config.get("fa13url");
-        console.log("config = " + fa13DomenUrl);
-
-        if (fa13DomenUrl != "") {
-            fa13DomenUrl = fa13DomenUrl + "/index.api.php?action=gameList&tournament_id=";
-        }
-        turnirs.forEach(function (turnir) {
-            links.push([turnir, fa13DomenUrl + turnir.get("sok")]);
-            tIds.push(turnir.get("sok"));
-           // console.log(fa13DomenUrl + turnir.get("sok"));
-        });
-
-
-
-        if (links.length > 0) {
-
-            var calQuery = new Parse.Query("Calendar");
-
-            calQuery.ascending("date");
-            calQuery.limit(1000);
-            calQuery.find().then(function (calEntries) {
-
-                calEntries.forEach(function (entry) {
-                    calMap[entry.get("date")] = entry;
-                });
-
-                link = links[t];
-                getmatchesFromFa13Server();
-
-            }, function (calEntries, error) {
+    getTurnirs().then(function (turnirs) {
+        getClubsForCalendarEntry(calendarEntry).then(function(clubs) {
+            updateMatchesForCalendarEntry(calendarEntry, turnirs, clubs).then(function (result) {
+                promise.resolve(result);
+            }, function (error) {
                 promise.reject(error);
             });
+        }, function(error) {
+            promise.reject(error);
+        });
 
-        } else {
-            promise.reject("No turnirs found");
+    }, function(error) {
+        promise.reject(error);
+    });
+
+    return promise;
+}
+
+exports.updateMatchesOnDateRequest = function (req, res) {
+    var calId = req.query.calendarEntryId;
+    var timetableQuery = new Parse.Query("Calendar");
+    timetableQuery.get(calId, {
+
+        success: function (calendarEntry) {
+
+            getTurnirs().then(function (turnirs) {
+                getClubsForCalendarEntry(calendarEntry).then(function(clubs) {
+                    updateMatchesForCalendarEntry(calendarEntry, turnirs, clubs).then(function (result) {
+                        res.send(result);
+                    }, function (error) {
+                        res.send(error);
+                    });
+                }, function(error) {
+                    res.send(error);
+                });
+
+            }, function(error) {
+                res.send(error);
+            });
+
+        },
+
+        error: function (object, error) {
+
+            return res.send({
+                "result":"error",
+                "message": "Не найдена запись в календаре!"
+            });
+
         }
+    });
 
-    }, function (error) {
+
+
+
+};
+
+function updateMatchesForCalendarEntry(calendarEntry, turnirs, clubs) {
+    var promise = new Parse.Promise();
+    getMatches(turnirs, clubs, calendarEntry).then(function(result) {
+        promise.resolve(result);
+    }, function(error) {
         promise.reject(error);
     });
 
 
-    function getmatchesFromFa13Server() {
-        console.log("getmatchesFromFa13Server");
-        Parse.Cloud.httpRequest({
-            url: link[1],
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            success: function (httpResponse) {
-                var cTurnirs = JSON.parse(httpResponse.text);
-                console.log("success");
-               // var cTurnirs = httpResponse;
-                if (cTurnirs.status == 0) {
-                    var cMatches = cTurnirs.data;
-
-                    cMatches.forEach(function (cMatch) {
-                        if (typeof  cMatch.tournamentId == "undefined") {
-                            cMatch["tournamentId"] = link[0].get("sok");
-                            cMatch["tournamentParse"] = link[0];
-                        }
-                    });
-
-                    if (cMatches.length > 0) {
-                        matches.push(cMatches);
-                    }
-
-                    t++;
-                    if (t < links.length) {
-                        link = links[t];
-
-                        getmatchesFromFa13Server();
-
-                    } else {
-                        savematchesToParse();
-                    }
-
-                } else {
-                    promise.reject("fa13 server api error " + JSON.stringify(httpResponse.text));
-                }
-
-            },
-            error: function (error) {
-                console.log("ERROR GETTING: " + link[1]);
-                //t++;
-                //if (t < links.length) {
-                //    getmatchesFromFa13Server(links[t]);
-                //} else {
-                //    savematchesToParse();
-                //}
+    return promise;
+}
 
 
-                promise.reject("ERROR GETTING: " + link[1]);
 
-            }
-        });
-    }
+function getMatches(turnirs, clubs, calendarEntry) {
 
-    function savematchesToParse() {
-        var matchQyery = new Parse.Query('Match');
-        console.log(tIds);
-        matchQyery.containedIn("objectId", tIds);
-        matchQyery.find().then(function (parseMathches) {
-            console.log("WE ARE HERE");
-            var matchesMap = {};
-            var matchesToSave = [];
-            if(parseMathches.length>0) {
-                parseMathches.forEach(function (entry) {
-                    matchesMap[entry.get("matchId")] = entry;
-                });
-            }
+    var date = moment(calendarEntry.get("date")).tz('Europe/Moscow').format("YYYY-MM-DD");
 
-            console.log(matches.length);
-            matches.forEach(function (match) {
+    var promise = new Parse.Promise();
 
-                var pMatch = matchesMap[match.id];
-                console.log(pMatch);
-                if (!pMatch) {
-                    pMatch = new Parse.Object('Match');
-                }
-                console.log(pMatch);
-                pMatch = setmatchProperties(pMatch, match);
-                matchesToSave.push(pMatch);
+    var matches = [];
+    var fa13DomenUrl = "";
 
+    Parse.Config.get().then(function (config) {
+
+        fa13DomenUrl = config.get("fa13url");
+
+
+        if (fa13DomenUrl != "") {
+            fa13DomenUrl = fa13DomenUrl + "/index.api.php?action=gameList&date=" + date;
+            getmatchesFromFa13Server(fa13DomenUrl).then(function(updatedMatches) {
+                savematchesToParse(updatedMatches, turnirs, clubs, calendarEntry).then(function(result) {
+                    promise.resolve(result);
+                }, function(error) {
+                    promise.reject(error.message);
+                })
+            }, function(error) {
+                promise.reject(error.message);
             });
+        } else {
+            promise.reject("There is no link to da13 server!");
+        }
 
-            console.log("matchesToSave count = ", matchesToSave.length);
-
-
-            Parse.Object.saveAll(matchesToSave, {
-                success: function (matches) {
-                    //status.success("All has imported successfully");
-
-
-                    //return result;
-                    promise.resolve("All matches has imported successfully");
+    }, function (error) {
+        promise.reject(error.message);
+    });
 
 
-                },
-                error: function (matches, error) {
+    return promise;
 
-                    //status.error("Error on saving players: " + error.code + " " + error.message)
-
-                    //return result;
-                    promise.reject("Error on saving matches: " + error);
-
-                }
-            })
+}
 
 
-        }, function (parseMathches, error) {
+function getmatchesFromFa13Server(link) {
+    var promise = new Parse.Promise();
+
+    Parse.Cloud.httpRequest({
+        url: link,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        success: function (httpResponse) {
+            var cTurnirs = JSON.parse(httpResponse.text);
+
+            if (cTurnirs.status == 0) {
+                var cMatches = cTurnirs.data;
+                promise.resolve(cMatches);
+            } else {
+                promise.reject("Ошибка запроса на сервер ФА13");
+            }
+        },
+        error: function (error) {
+            console.log("ERROR GETTING: " + link);
+
             promise.reject(error);
+
+        }
+    });
+
+    return promise;
+}
+
+function savematchesToParse(matches, turnirs, clubs, calendarEntry) {
+    var promise = new Parse.Promise();
+
+    var matchQyery = new Parse.Query('Match');
+    matchQyery.limit(1000);
+    matchQyery.equalTo("calendar", calendarEntry);
+    matchQyery.find().then(function (parseMathches) {
+
+        var matchesMap = {};
+        var matchesToSave = [];
+        if (parseMathches.length > 0) {
+            parseMathches.forEach(function (entry) {
+                matchesMap[entry.get("matchId")] = entry;
+            });
+        }
+
+
+        //var newMatches = [];
+        //
+        //var oldMatches = [];
+
+        //if (typeof matchesMap[matches[0].id] == "undefined" || matchesMap[matches[0].id] == null) {
+        //
+        //    return promise.resolve("some sheet");
+        //} else {
+        //    return promise.resolve(matchesMap[matches[0].id]);
+        //}
+
+
+        //matches.forEach(function (match) {
+        for(var i =0; i<matches.length;i++) {
+            var match = matches[i];
+            var pMatch = matchesMap[match.id];
+
+            if (typeof pMatch == "undefined" || pMatch == null) {
+                pMatch = new Parse.Object('Match');
+                //newMatches.push(pMatch);
+            }
+
+            pMatch = setmatchProperties(pMatch, match);
+            matchesToSave.push(pMatch);
+
+        }
+
+
+
+        Parse.Object.saveAll(matchesToSave, {
+            success: function (matches) {
+
+                promise.resolve("All matches has imported successfully");
+
+
+            },
+            error: function (matches, error) {
+
+                //status.error("Error on saving players: " + error.code + " " + error.message)
+
+                //return result;
+                promise.reject(error);
+
+            }
         })
-    }
+
+
+
+    }, function (parseMathches, error) {
+        promise.reject(error);
+    });
 
     function setmatchProperties(pMatch, fMatch) {
-
-
 
         var properties = [
             "realdata",
@@ -340,21 +318,16 @@ function getMatches(turnirs) {
             "report_url",
             "video_url"];
 
-        console.log(properties);
-        console.log(pMatch);
+
         pMatch.set("matchId", fMatch.id);
         properties.forEach(function (property) {
             pMatch.set(property, fMatch[property]);
         });
 
-        var aDate = fMatch.realdata.split("-");
-        var date = new Date(aDate[1] + " " + aDate[2] + " " + aDate[0]);
-        var cEntry = calMap[date];
-        if (cEntry) {
-            pMatch.set("calendarEntry", cEntry);
-        }
-
-        console.log("PR: " + fMatch);
+        pMatch.set("ownerClub", clubs[fMatch.sokowner]);
+        pMatch.set("guestClub", clubs[fMatch.sokguest]);
+        pMatch.set("turnir", turnirs[fMatch.tournsok]);
+        pMatch.set("calendar", calendarEntry);
 
         return pMatch;
     }
@@ -363,7 +336,62 @@ function getMatches(turnirs) {
 
 }
 
-exports.getMatches = function (turnirs) {
-    return getMatches(turnirs);
+exports.firstImportOfmatches = function(calendarEntries) {
+    var promise = new Parse.Promise();
 
+    recursiveImport(0, calendarEntries);
+
+    function recursiveImport(i, calendarEntries) {
+
+        if(i<calendarEntries.length) {
+            var calendarEntry = calendarEntries[i];
+            updateMatchesInDate(calendarEntry).then(function(result) {
+
+                var lastmatchUpdate = new Parse.Object("lastUpdate");
+                lastmatchUpdate.set("date",calendarEntry.get("date"));
+                lastmatchUpdate.save({
+                    success:function(obj) {
+                        console.log(calendarEntry.get("date") + " processed");
+                        i++;
+                        recursiveImport(i, calendarEntries)
+                    },
+                    error: function(error) {
+                        promise.reject(error.message);
+                    }
+
+                });
+
+            }, function(error) {
+                promise.reject(error.message);
+            })
+        } else {
+            promise.resolve("All the matches were imported")
+        }
+    }
+
+    return promise;
+};
+
+exports.getAllmatchesForTeam = function(teamId) {
+    var promise = new Parse.Promise();
+
+    var gMatchQyery = new Parse.Query('Match');
+    gMatchQyery.limit(1000);
+    gMatchQyery.equalTo("sokguest", teamId);
+
+    var oMatchQyery = new Parse.Query('Match');
+    oMatchQyery.limit(1000);
+    oMatchQyery.equalTo("sokowner", teamId);
+
+    var mainQuery =  Parse.Query.or(gMatchQyery, oMatchQyery);
+
+
+    mainQuery.find().then(function (parseMathches) {
+        promise.resolve(parseMathches);
+    }, function(parseMatches, error) {
+        promise.reject(error.message);
+    });
+
+
+    return promise;
 };

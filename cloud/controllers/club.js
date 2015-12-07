@@ -1,6 +1,6 @@
 var _ = require('underscore');
 var Club = Parse.Object.extend('Club');
-
+var turnirs =  require('cloud/controllers/turnirs');
 // Show a given club based on specified id.
 exports.show = function(req, res) {
   
@@ -31,13 +31,23 @@ exports.show = function(req, res) {
       return [];
     }
   }).then(function(players) {
-    res.render('club/show', {
-      aClub: allClub,
-      pClub: prevClub,
-      club: currClub,
-      players: players,
-      cDate: aDate
-    });
+
+      turnirs.getAllmatchesForTeam(req.params.clubId).then(function(matches) {
+        res.render('index', {
+          aClub: allClub,
+          pClub: prevClub,
+          club: currClub,
+          players: players,
+          cDate: aDate,
+          matches:matches,
+          title:currClub.get("name"),
+          page:"showClub"
+        });
+      }, function(error) {
+        res.send(500, error);
+      })
+
+
   },
   function() {
     res.send(500, 'Failed finding the specified club to show');

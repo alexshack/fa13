@@ -24,9 +24,6 @@ exports.createCalendar = function (req, res) {
                             if(typeof groupedEvents[event.virtual_date] !="undefined") {
                                 groupedEvents[event.virtual_date].events.push(event);
 
-
-
-
                                 if(["abankrot", "playerbuy", "obmen", "transfer", "smena", "game", "tren", "game-wc", "schoolsale", "club"].indexOf(event.event_code) !=-1) {
                                     groupedEvents[event.virtual_date]["shouldUpdateAll"] = true;
                                 }
@@ -58,7 +55,7 @@ exports.createCalendar = function (req, res) {
                                     groupedEvents[event.virtual_date]["shouldUpdateTransList"] = true;
                                 }
 
-                                if(["cup", "shedule"].indexOf(event.event_code) !=-1) {
+                                if(["game", "game-wc", "cup", "shedule"].indexOf(event.event_code) !=-1) {
                                     groupedEvents[event.virtual_date]["shouldUpdateTurnirs"] = true;
                                 }
 
@@ -263,6 +260,30 @@ exports.migrateCalendar = function(req, res) {
 
 };
 
+function getCurentSeason() {
+    var promise = new Parse.Promise();
+    var envar = new envarlib.Envar();
+    envar.init().then(function(result) {
+
+        if (result.currentSeason) {
+
+            result.getVarAsObject("currentSeason").then(function (season) {
+                promise.resolve(season);
+            }, function (error) {
+                promise.reject(error);
+            })
+        } else {
+            var error = {};
+            error.message = "Не найден активный сезон!";
+            promise.reject(error);
+        }
+
+    }, function(error) {
+        promise.reject(error);
+    });
+    return promise;
+}
+
 function migrate(start) {
 
     var promise = new Parse.Promise();
@@ -415,8 +436,6 @@ exports.getCalendarEntryWithDate = function(req, res) {
             } else {
                 res.send({"errors": "No calendar entry found in date " + date})
             }
-
-
         },
         error: function (error) {
             console.log("Error on finding timetable: " + error.code + " " + error.message);
@@ -426,5 +445,94 @@ exports.getCalendarEntryWithDate = function(req, res) {
             });
         }
     });
+};
+
+exports.getCalendarForSeason = function(season) {
+    var promise = new Parse.Promise();
+
+    getCurrentCalendar(season).then(function(entries) {
+        promise.resolve(entries);
+    }, function(error) {
+        promise.reject(error.message);
+    });
+
+    return promise;
+};
+
+function getCurrentCalendar(season) {
+    var promise = new Parse.Promise();
+
+    var timetableQuery = new Parse.Query("Calendar");
+    timetableQuery.equalTo("season", season);
+    timetableQuery.limit(1000);
+    timetableQuery.ascending("date");
+    //  timetableQuery.equalTo("shouldUpdateTurnirs", true);
+
+    //  timetableQuery.greaterThan("date", new Date("Thu Sep 17 2015 21:00:00 GMT+0000"));
+
+    timetableQuery.find({
+        success: function (entries) {
+            promise.resolve(entries);
+        },
+        error: function (error) {
+            promise.reject(error.message);
+        }
+    });
+
+    return promise;
+}
+
+exports.renderCalendarData = function(req, res) {
+    getCurentSeason().then(function(season) {
+        getCurrentCalendar(season).then(function(entries) {
+            var eventsQuery = new Parse.Query("CalendarEvent");
+            eventsQuery.containedIn("calendar", entries);
+            eventsQuery.ascending("date");
+            eventsQuery.limit(1000);
+            var colors = {};
+            colors.player = "blue";
+            colors.translist = "blue";
+            colors["game-tov"] = "blue";
+            colors["game-test"] = "green";
+            colors.abankrot = "blue";
+            colors.playerbuy = "blue";
+            colors.obmen = "red";
+            colors.transfer = "red";
+            colors.smena = "red";
+            colors.tren = "gray";
+            colors.game = "green";
+            colors.shedule = "blue";
+            colors["game-wc"] = "green";
+            colors.club = "red";
+            colors.schoolsale = "red";
+            colors.cup = "blue";
+
+            eventsQuery.find().then(function(events) {
+                var eventsData = [];
+                events.forEach(function(event) {
+                    var e = {};
+                    e.id = event.id;
+                    e.title = event.get("description");
+                    e.start =  moment(event.get("date")).tz('Europe/Moscow').format("YYYY-MM-DD");
+                    e.color = colors[event.get("event_code")]?colors[event.get("event_code")]:"gray";
+                    eventsData.push(e);
+                });
+
+                res.render("calendar", {
+                    eventsData: eventsData
+                })
+
+            }, function(events, error) {
+                res.render("calendar", {
+                    error: error,
+                    eventsData: ""
+                })
+            })
+        })
+    }, function(error) {
+        res.render("calendar", {
+            error: error
+        })
+    })
 };
 

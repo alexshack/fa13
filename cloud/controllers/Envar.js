@@ -5,12 +5,12 @@
 // Constructor
     function Envar() {
         // always initialize all instance properties
-        console.log('instance Envar created');
+       // console.log('instance Envar created');
 
         this.init = function () {
 
         var env = this;
-            console.log("Envar initializes");
+          //  console.log("Envar initializes");
 
             var promise = new Parse.Promise();
 
@@ -42,7 +42,7 @@
         this.getVarAsObject = function (varName) {
             var env = this;
             var promise = new Parse.Promise();
-            console.log(env);
+          //  console.log(env);
             if(typeof  env[varName] == "undefined") {
                 promise.resolve(null);
                 return promise;

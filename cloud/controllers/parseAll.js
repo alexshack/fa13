@@ -718,7 +718,7 @@ function parseAll(allText, calendarEntry) {
              club.set("scout", parseInt(s[11]));
             */
 
-            var coachSallary = 32 + (1.6 *coach) + 8*(goalkeepersCoach + defendersCoach + midfieldersCoach +forwardsCoach + fitnessCoach + moraleCoach + doctorQualification + doctorPlayers)+24*scout;
+            var coachSallary = 32 + (1.6 *(coach - 200)) + 8*(goalkeepersCoach + defendersCoach + midfieldersCoach +forwardsCoach + fitnessCoach + moraleCoach + doctorQualification + doctorPlayers)+24*scout;
             club.set("coachSallary", coachSallary);
 
             clubs.push(club);
